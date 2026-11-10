@@ -35,6 +35,7 @@ const {
     getMediaMtxState
 } = require('./utils/mediamtx');
 const {
+    createSessionStore,
     setupSessionMiddleware,
     setupGlobalMiddleware,
     requireAuth: requireAuthUtil,
@@ -503,8 +504,9 @@ const behindProxy = config.server.behind_https_proxy === true;
 
 console.log(`[Config] behind_https_proxy: ${behindProxy}`);
 
-// Shared session store to maintain data across dynamic middleware instances
-const sessionStore = new session.MemoryStore();
+// Shared session store to maintain data across dynamic middleware instances.
+// SQLite by default (survives restarts), MemoryStore only as a fallback.
+const sessionStore = createSessionStore(config);
 
 // Initialize session middleware ONCE
 const sessionMiddleware = session({
