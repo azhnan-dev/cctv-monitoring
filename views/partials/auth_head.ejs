@@ -1,0 +1,16 @@
+<%#
+  Shared <head> + opening <html>/<body> for the three auth pages
+  (admin login, customer login, register).
+
+  Locals: base_path, pageTitle (string), pageDesc (optional, for meta description)
+%>
+<!DOCTYPE html>
+<html lang="id" class="dark" data-theme="dark">
+<head>
+    <%- include('theme_head', { base_path: base_path, themeColor: '#0f172a' }) %>
+    <title><%= pageTitle %></title>
+    <% if (typeof pageDesc !== 'undefined' && pageDesc) { %>
+    <meta name="description" content="<%= pageDesc %>">
+    <% } %>
+</head>
+<body>

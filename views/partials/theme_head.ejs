@@ -1,0 +1,157 @@
+<%#
+  Shared <head> internals: fonts, Tailwind config mapped to design tokens,
+  global stylesheets and the no-FOUC theme bootstrap.
+
+  Design tokens live in /css/tokens.css (source of truth:
+  design-system/cctv-monitoring/MASTER.md). Tailwind utilities are mapped to
+  those CSS variables so `bg-surface`, `text-muted`, `border-line` and the
+  existing gray-*/emerald-*/rose-* classes all follow the same palette.
+
+  Locals: base_path (string), themeColor (optional string)
+%>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="<%= typeof themeColor !== 'undefined' ? themeColor : '#0f172a' %>">
+<link rel="manifest" href="<%= base_path %>/manifest.json">
+<link rel="icon" href="<%= base_path %>/icon-192x192.png">
+<link rel="apple-touch-icon" href="<%= base_path %>/icon-192x192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Fira Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['Fira Code', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+        colors: {
+          /* Semantic tokens — resolve to CSS variables, so dark/light swap works */
+          bg: 'var(--bg)',
+          surface: 'var(--surface)',
+          'surface-2': 'var(--surface-2)',
+          'surface-3': 'var(--surface-3)',
+          fg: 'var(--fg)',
+          muted: 'var(--fg-muted)',
+          subtle: 'var(--fg-subtle)',
+          line: 'var(--border)',
+          'line-strong': 'var(--border-strong)',
+          brand: 'var(--brand)',
+          accent: 'var(--accent)',
+          'accent-text': 'var(--accent-text)',
+          danger: 'var(--danger)',
+          'danger-text': 'var(--danger-text)',
+          warning: 'var(--warn)',
+          'warning-text': 'var(--warn-text)',
+
+          /* Legacy scales remapped onto the new palette so the existing
+             utility classes in admin pages keep working unchanged. */
+          gray: {
+            50: '#f8fafc',
+            100: '#f1f5f9',
+            200: '#e2e8f0',
+            300: '#cbd5e1',
+            400: '#94a3b8',
+            500: '#64748b',
+            600: '#475569',
+            700: '#2a3448',
+            800: '#192134',
+            900: '#10192e',
+            950: '#0f172a',
+          },
+          emerald: {
+            300: '#6ee7b7',
+            400: '#34d399',
+            500: '#059669',
+            600: '#047857',
+            700: '#036249',
+            800: '#064e3b',
+            900: '#053f31',
+          },
+          rose: {
+            300: '#fca5a5',
+            400: '#f87171',
+            500: '#dc2626',
+            600: '#b91c1c',
+            700: '#991b1b',
+            800: '#7f1d1d',
+            900: '#601a1a',
+          },
+          amber: {
+            300: '#fcd34d',
+            400: '#fbbf24',
+            500: '#d97706',
+            600: '#b45309',
+            700: '#92400e',
+            800: '#78350f',
+            900: '#5c2a0c',
+          },
+        },
+        borderRadius: {
+          sm: '4px',
+          DEFAULT: '6px',
+          md: '6px',
+          lg: '8px',
+          xl: '10px',
+          '2xl': '10px',
+          '3xl': '12px',
+        },
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="<%= base_path %>/css/tokens.css">
+<link rel="stylesheet" href="<%= base_path %>/css/ui.css">
+
+<script>
+  /* Theme bootstrap — must run before paint so there is no flash. */
+  (function () {
+    var KEY = 'cctv-theme';
+    var theme = 'dark';
+    try {
+      var saved = localStorage.getItem(KEY);
+      if (saved === 'light' || saved === 'dark') theme = saved;
+    } catch (e) {}
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.classList.toggle('light', theme === 'light');
+
+    window.cctvToggleTheme = function () {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      document.documentElement.classList.toggle('dark', next === 'dark');
+      document.documentElement.classList.toggle('light', next === 'light');
+      try { localStorage.setItem(KEY, next); } catch (e) {}
+      document.querySelectorAll('[data-theme-toggle]').forEach(function (el) {
+        el.setAttribute('aria-pressed', String(next === 'light'));
+        el.setAttribute('aria-label', next === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap');
+      });
+    };
+  })();
+</script>
+
+<style>
+  /* Base layer kept tiny; components live in /css/ui.css */
+  html { color-scheme: dark; }
+  html[data-theme="light"] { color-scheme: light; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--fg); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>

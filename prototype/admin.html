@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototype — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-video"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></g>
+    <g id="i-grid"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></g>
+    <g id="i-camera"><path d="M3 8.5h3l1.5-2h9L18 8.5h3v10H3Z"/><circle cx="12" cy="13" r="3.5"/></g>
+    <g id="i-clock"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.5"/></g>
+    <g id="i-user"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></g>
+    <g id="i-search"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4.5 4.5"/></g>
+    <g id="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></g>
+    <g id="i-moon"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></g>
+    <g id="i-warn"><path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.2v.3"/></g>
+    <g id="i-refresh"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 3.5V8h-4.5"/></g>
+    <g id="i-panel"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9.5 4v16"/></g>
+    <g id="i-chevron"><path d="m6.5 9.5 5.5 5 5.5-5"/></g>
+    <g id="i-more"><circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/></g>
+    <g id="i-logout"><path d="M14 8V5.5h-11v13h11V16"/><path d="M9 12h11m-3.5-3.5L20 12l-3.5 3.5"/></g>
+    <g id="i-shield"><path d="M12 3.5 5 6v6c0 4 3 7.2 7 8.5 4-1.3 7-4.5 7-8.5V6Z"/><path d="m9 12 2 2 4-4"/></g>
+    <g id="i-bell"><path d="M6 10a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5h-15S6 14 6 10Z"/><path d="M10 19a2 2 0 0 0 4 0"/></g>
+    <g id="i-disk"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></g>
+    <g id="i-chart"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-4 3 3 4-6"/></g>
+    <g id="i-map"><path d="m9 4 6 2 5.5-2v14L15 20l-6-2-5.5 2V6Z"/><path d="M9 4v14M15 6v14"/></g>
+    <g id="i-list"><path d="M8 6.5h12M8 12h12M8 17.5h12"/><circle cx="4" cy="6.5" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="17.5" r="1"/></g>
+    <g id="i-wifioff"><path d="M3 4l18 18"/><path d="M8.5 12.5a6 6 0 0 1 4-1.4"/><path d="M5 9a11 11 0 0 1 5-2.6"/><path d="M14.5 7a11 11 0 0 1 4.5 2"/><circle cx="12" cy="18.5" r="1"/></g>
+  </defs>
+</svg>
+
+<div class="shell" data-collapsed="false">
+
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="sidebar" aria-label="Navigasi admin">
+    <div class="sidebar__brand">
+      <span class="brandmark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-video"/></svg>
+      </span>
+      <div class="sidebar__brandtext">
+        <strong>CCTV Alijaya</strong>
+        <span>Panel Admin</span>
+      </div>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup__label">Operasi</div>
+      <a class="navitem" href="#" aria-current="page">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-grid"/></svg>
+        Dashboard
+      </a>
+      <a class="navitem" href="live.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-video"/></svg>
+        Live
+        <span class="navitem__meta">7/8</span>
+      </a>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-map"/></svg>
+        Peta kamera
+      </a>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-clock"/></svg>
+        Rekaman
+      </a>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup__label">Kamera &amp; Media</div>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-camera"/></svg>
+        Kamera
+        <span class="navitem__meta">14</span>
+      </a>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg>
+        Streaming
+      </a>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-disk"/></svg>
+        Storage
+      </a>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup__label">Manajemen</div>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-user"/></svg>
+        Pelanggan
+      </a>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>
+        Hak akses
+      </a>
+    </div>
+
+    <div class="navgroup">
+      <div class="navgroup__label">Log &amp; Notifikasi</div>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-list"/></svg>
+        Aktivitas
+      </a>
+      <a class="navitem" href="#">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-bell"/></svg>
+        Alert
+        <span class="navitem__meta" style="color:var(--danger-text)">3</span>
+      </a>
+    </div>
+
+    <div class="sidebar__foot navgroup">
+      <a class="navitem" href="login.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-logout"/></svg>
+        Keluar
+      </a>
+    </div>
+  </nav>
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <button class="btn btn--icon" type="button" data-collapse aria-pressed="false" aria-label="Ciutkan sidebar" title="Ciutkan sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-panel"/></svg>
+    </button>
+
+    <label class="search" style="max-width:260px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-search"/></svg>
+      <input type="search" placeholder="Cari kamera, pelanggan, log" aria-label="Pencarian global">
+    </label>
+
+    <div class="topbar__spacer"></div>
+
+    <div class="topbar__group">
+      <span class="badge badge--warn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-warn"/></svg>
+        3 kamera offline
+      </span>
+
+      <div class="vrule" aria-hidden="true"></div>
+
+      <span class="num hide-sm" data-clock style="font-size:14px;font-weight:600">00:00:00</span>
+
+      <button class="btn btn--icon" type="button" data-theme-toggle aria-label="Aktifkan mode terang" title="Tema">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-moon"/></svg>
+      </button>
+
+      <button class="btn btn--icon" type="button" aria-label="Notifikasi" title="Notifikasi">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg>
+      </button>
+
+      <button class="btn" type="button" style="padding:0 8px 0 6px">
+        <span class="dot dot--live" aria-hidden="true"></span>
+        <span>Admin</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-chevron"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page">
+
+      <div class="pagehead">
+        <div>
+          <div class="crumbs">Panel admin <span aria-hidden="true">/</span> <span aria-current="page">Dashboard</span></div>
+          <h1 class="pagehead__title">Ringkasan operasi</h1>
+          <p class="pagehead__desc">Data per <span class="num" data-datetime></span> · 12 kamera aktif dari 14 terdaftar</p>
+        </div>
+        <div class="row wrap">
+          <button class="btn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-refresh"/></svg>
+            Sinkron kamera
+          </button>
+          <a class="btn btn--primary" href="#">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-camera"/></svg>
+            Tambah kamera
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="grid-kpi">
+        <div class="kpi">
+          <div class="kpi__label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-camera"/></svg>
+            Total kamera
+          </div>
+          <div class="kpi__value">14</div>
+          <div class="kpi__foot">2 embed · 12 RTSP</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi__label">
+            <span class="dot dot--live" aria-hidden="true"></span>
+            Online
+          </div>
+          <div class="kpi__value">11 <small>/ 14</small></div>
+          <div class="kpi__foot"><span style="color:var(--danger-text)">3 offline</span> · uptime 98.2%</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi__label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-disk"/></svg>
+            Storage terpakai
+          </div>
+          <div class="kpi__value">62<small>%</small></div>
+          <div class="kpi__foot">1.86 TB dari 3 TB</div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi__label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-warn"/></svg>
+            Alert hari ini
+          </div>
+          <div class="kpi__value">5</div>
+          <div class="kpi__foot">3 belum ditangani</div>
+        </div>
+      </div>
+
+      <!-- Table + side column -->
+      <div style="display:grid;grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:16px" class="stack-md">
+
+        <section class="card">
+          <div class="card__head">
+            <div>
+              <div class="card__title">Kesehatan kamera</div>
+              <div class="card__meta">Diperbarui otomatis setiap 30 detik</div>
+            </div>
+            <div class="card__actions">
+              <div class="seg" role="group" aria-label="Filter status">
+                <button class="seg__btn" type="button" aria-pressed="true" style="font-family:var(--font-ui)">Semua</button>
+                <button class="seg__btn" type="button" aria-pressed="false" style="font-family:var(--font-ui)">Masalah</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tablewrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Kamera</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Bitrate</th>
+                  <th scope="col">Latensi</th>
+                  <th scope="col">Terakhir aktif</th>
+                  <th scope="col" class="table__actions">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="table__name">Gudang Utama</div><div class="table__sub">Gudang · Blok A</div></td>
+                  <td><span class="badge badge--live"><span class="badge__dot" aria-hidden="true"></span> Live</span></td>
+                  <td class="num">4.2 Mbps</td>
+                  <td class="num">118 ms</td>
+                  <td class="num">sekarang</td>
+                  <td class="table__actions">
+                    <button class="btn btn--icon" type="button" aria-label="Aksi untuk Gudang Utama">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-more"/></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><div class="table__name">Parkir Timur</div><div class="table__sub">Area parkir</div></td>
+                  <td><span class="badge badge--live"><span class="badge__dot" aria-hidden="true"></span> Live</span></td>
+                  <td class="num">3.8 Mbps</td>
+                  <td class="num">132 ms</td>
+                  <td class="num">sekarang</td>
+                  <td class="table__actions">
+                    <button class="btn btn--icon" type="button" aria-label="Aksi untuk Parkir Timur">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-more"/></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><div class="table__name">Kasir 1</div><div class="table__sub">Front office</div></td>
+                  <td><span class="badge badge--warn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-warn"/></svg> Bitrate rendah</span></td>
+                  <td class="num">0.6 Mbps</td>
+                  <td class="num">420 ms</td>
+                  <td class="num">2 mnt lalu</td>
+                  <td class="table__actions">
+                    <button class="btn btn--icon" type="button" aria-label="Aksi untuk Kasir 1">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-more"/></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><div class="table__name">Lorong 2</div><div class="table__sub">Gudang · Blok B</div></td>
+                  <td><span class="badge badge--offline"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-wifioff"/></svg> Offline</span></td>
+                  <td class="num">—</td>
+                  <td class="num">—</td>
+                  <td class="num">12 mnt lalu</td>
+                  <td class="table__actions">
+                    <button class="btn btn--icon" type="button" aria-label="Aksi untuk Lorong 2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-more"/></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><div class="table__name">Area Loading</div><div class="table__sub">Gudang · Dock 2</div></td>
+                  <td><span class="badge badge--live"><span class="badge__dot" aria-hidden="true"></span> Live</span></td>
+                  <td class="num">3.4 Mbps</td>
+                  <td class="num">124 ms</td>
+                  <td class="num">sekarang</td>
+                  <td class="table__actions">
+                    <button class="btn btn--icon" type="button" aria-label="Aksi untuk Area Loading">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-more"/></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><div class="table__name">Gerbang Belakang</div><div class="table__sub">Area luar</div></td>
+                  <td><span class="badge badge--offline"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-wifioff"/></svg> Offline</span></td>
+                  <td class="num">—</td>
+                  <td class="num">—</td>
+                  <td class="num">1 jm lalu</td>
+                  <td class="table__actions">
+                    <button class="btn btn--icon" type="button" aria-label="Aksi untuk Gerbang Belakang">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-more"/></svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="stack">
+          <!-- Storage -->
+          <section class="card">
+            <div class="card__head">
+              <div class="card__title">Penyimpanan 7 hari</div>
+              <div class="card__actions"><span class="mono" style="font-size:11px;color:var(--fg-muted)">GB</span></div>
+            </div>
+            <div class="card__body stack">
+              <div class="bars" role="img" aria-label="Penggunaan storage 7 hari terakhir: rata-rata 240 GB per hari">
+                <div class="bar"><div class="bar__fill" style="height:42%"></div><span class="bar__label">Sen</span></div>
+                <div class="bar"><div class="bar__fill" style="height:58%"></div><span class="bar__label">Sel</span></div>
+                <div class="bar"><div class="bar__fill" style="height:51%"></div><span class="bar__label">Rab</span></div>
+                <div class="bar"><div class="bar__fill" style="height:72%"></div><span class="bar__label">Kam</span></div>
+                <div class="bar"><div class="bar__fill" style="height:64%"></div><span class="bar__label">Jum</span></div>
+                <div class="bar"><div class="bar__fill" style="height:80%"></div><span class="bar__label">Sab</span></div>
+                <div class="bar"><div class="bar__fill bar__fill--muted" style="height:36%"></div><span class="bar__label">Min</span></div>
+              </div>
+              <div class="meter">
+                <div class="meter__row"><span>Disk utama</span><span class="num">1.86 / 3.00 TB</span></div>
+                <div class="progress"><div class="progress__fill" style="width:62%"></div></div>
+                <div class="hint">Retensi 30 hari · perkiraan penuh dalam 21 hari</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Alerts -->
+          <section class="card">
+            <div class="card__head">
+              <div class="card__title">Alert terbaru</div>
+              <div class="card__actions"><a class="btn btn--sm btn--ghost" href="#">Lihat semua</a></div>
+            </div>
+            <ul class="list">
+              <li class="list__item">
+                <span class="dot dot--offline" style="margin-top:6px" aria-hidden="true"></span>
+                <div>
+                  <div class="list__title">Lorong 2 offline</div>
+                  <div class="list__meta"><span class="mono">10:42</span> · RTSP timeout setelah 15 dtk</div>
+                </div>
+              </li>
+              <li class="list__item">
+                <span class="dot dot--warn" style="margin-top:6px" aria-hidden="true"></span>
+                <div>
+                  <div class="list__title">Bitrate Kasir 1 turun 85%</div>
+                  <div class="list__meta"><span class="mono">10:31</span> · 4.1 → 0.6 Mbps</div>
+                </div>
+              </li>
+              <li class="list__item">
+                <span class="dot dot--warn" style="margin-top:6px" aria-hidden="true"></span>
+                <div>
+                  <div class="list__title">Penyimpanan &gt; 60%</div>
+                  <div class="list__meta"><span class="mono">09:58</span> · retensi 30 hari terancam</div>
+                </div>
+              </li>
+              <li class="list__item">
+                <span class="dot dot--live" style="margin-top:6px" aria-hidden="true"></span>
+                <div>
+                  <div class="list__title">Kamera baru terdaftar</div>
+                  <div class="list__meta"><span class="mono">08:15</span> · Server Room oleh admin</div>
+                </div>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<style>
+  @media (max-width: 1100px) {
+    .stack-md { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+</style>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
