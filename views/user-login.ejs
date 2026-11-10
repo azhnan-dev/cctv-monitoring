@@ -1,124 +1,122 @@
-<!DOCTYPE html>
-<html lang="id">
+<%- include('partials/auth_head', { base_path: base_path, pageTitle: 'Masuk Pelanggan | CCTV' }) %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0f172a">
-    <link rel="manifest" href="<%= base_path %>/manifest.json">
-    <link rel="icon" href="<%= base_path %>/icon-192x192.png">
-    <link rel="apple-touch-icon" href="<%= base_path %>/icon-192x192.png">
-    <title>Login Pelanggan - CCTV</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="<%= base_path %>/css/modern.css">
-    <style>
-        body {
-            background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 100%);
-            color-scheme: dark;
-        }
-        input { color: white !important; }
-    </style>
-</head>
+<div class="ui-auth">
 
-<body class="flex items-center justify-center min-h-screen p-6">
-
-    <div class="w-full max-w-md glass-card p-10 animate-fade-in border-emerald-500/20">
-        <div class="text-center mb-10">
-            <div class="inline-flex p-3 bg-emerald-500/10 rounded-2xl mb-4">
-                <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+    <!-- Panel brand -->
+    <section class="ui-auth__brand" aria-label="Tentang layanan">
+        <div class="ui-row" style="gap:8px">
+            <span class="ui-brandmark" aria-hidden="true">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/>
                 </svg>
+            </span>
+            <div>
+                <div style="font-size:13px;font-weight:600"><%= (typeof site !== 'undefined' && site.title) ? site.title : 'CCTV Alijaya' %></div>
+                <div style="font-size:11px;color:var(--fg-muted)">Akses pelanggan</div>
             </div>
-            <h1 class="text-2xl font-bold text-white tracking-tight">Login Pelanggan</h1>
-            <p class="text-slate-400 text-sm mt-2">Akses kamera sesuai level langganan Anda</p>
         </div>
 
-        <% if (locals.error) { %>
-            <div class="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-4 py-3 rounded-xl mb-6 text-sm text-center font-medium">
-                <%= error %>
-            </div>
-        <% } %>
+        <div class="ui-stack" style="gap:var(--space-4)">
+            <h1 class="ui-auth__claim">Pantau lokasi Anda kapan saja.</h1>
+            <p class="ui-auth__lead">
+                Masuk untuk melihat kamera sesuai level langganan, meninjau rekaman,
+                dan menerima notifikasi gangguan.
+            </p>
 
-        <form action="<%= base_path %>/user/login" method="POST" class="space-y-6">
-            <div class="space-y-2">
-                <label for="username" class="block text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Username</label>
-                <input type="text" id="username" name="username" required
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all placeholder-slate-600"
-                    placeholder="Masukkan username">
-            </div>
-
-            <div class="space-y-2">
-                <label for="password" class="block text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
-                <input type="password" id="password" name="password" required
-                    class="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all placeholder-slate-600"
-                    placeholder="••••••••">
-            </div>
-
-            <button type="submit"
-                class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 px-4 rounded-xl transition duration-300 shadow-lg shadow-emerald-500/20 transform active:scale-[0.98]">
-                MASUK KE DASHBOARD
-            </button>
-            <div class="text-center">
-                <p class="text-slate-500 text-xs">Belum punya akun? 
-                    <a href="<%= base_path %>/user/register" class="text-emerald-500 hover:text-emerald-400 font-bold ml-1 transition">Daftar Sekarang</a>
-                </p>
-            </div>
-        </form>
-
-        <div class="mt-10 pt-6 border-t border-slate-800 flex justify-between items-center">
-            <a href="<%= base_path %>/" class="text-slate-500 hover:text-white text-xs font-medium transition-all">
-                ← Kembali
-            </a>
-            <a href="<%= base_path %>/login" class="text-slate-600 hover:text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                Admin Login
-            </a>
+            <ul class="ui-checklist">
+                <li>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+                    Kamera sesuai level akses akun Anda
+                </li>
+                <li>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+                    Rekaman arsip dan unduh bukti
+                </li>
+                <li>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+                    Notifikasi push saat kamera bermasalah
+                </li>
+            </ul>
         </div>
-    </div>
 
-    <script src="<%= base_path %>/js/password-toggle.js"></script>
-    <script>
-        (() => {
-            const basePath = '<%= base_path %>' || '';
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register(`${basePath}/sw.js`).catch(() => { });
-                });
-            }
+        <div class="ui-auth__stats">
+            <div class="ui-auth__stat"><b>24/7</b><span>akses live</span></div>
+            <div class="ui-auth__stat"><b>30</b><span>hari arsip rekaman</span></div>
+            <div class="ui-auth__stat"><b>1</b><span>akun untuk semua kamera</span></div>
+        </div>
+    </section>
 
-            let deferredPrompt = null;
-            const showBanner = () => {
-                if (document.getElementById('pwa-install-banner')) return;
-                const banner = document.createElement('div');
-                banner.id = 'pwa-install-banner';
-                banner.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:9999;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(2,6,23,0.95);border:1px solid rgba(148,163,184,0.25);border-radius:14px;color:#e2e8f0;font:700 12px/1.2 Inter, system-ui, sans-serif;';
-                banner.innerHTML = '<div style="display:flex;flex-direction:column;gap:2px"><div style="font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:10px;color:#94a3b8">Install</div><div>Pasang aplikasi untuk akses lebih cepat.</div></div><div style="display:flex;gap:8px;flex-shrink:0"><button id="pwa-install-btn" style="padding:8px 10px;border-radius:10px;background:#10b981;color:#020617;border:0;font-weight:900;font-size:12px;cursor:pointer">Install</button><button id="pwa-close-btn" style="padding:8px 10px;border-radius:10px;background:transparent;color:#94a3b8;border:1px solid rgba(148,163,184,0.35);font-weight:900;font-size:12px;cursor:pointer">Tutup</button></div>';
-                document.body.appendChild(banner);
-                document.getElementById('pwa-close-btn').onclick = () => banner.remove();
-                document.getElementById('pwa-install-btn').onclick = async () => {
-                    if (!deferredPrompt) return;
-                    banner.remove();
-                    deferredPrompt.prompt();
-                    try { await deferredPrompt.userChoice; } catch { }
-                    deferredPrompt = null;
-                };
-            };
+    <!-- Form -->
+    <section class="ui-auth__form">
+        <div class="ui-auth__card">
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                showBanner();
-            });
+            <div>
+                <h2 class="ui-auth__title">Masuk sebagai pelanggan</h2>
+                <p class="ui-auth__sub">Gunakan akun yang terdaftar pada layanan ini.</p>
+            </div>
 
-            window.addEventListener('appinstalled', () => {
-                deferredPrompt = null;
-                const b = document.getElementById('pwa-install-banner');
-                if (b) b.remove();
-            });
-        })();
-    </script>
-</body>
-</html>
-</html>
+            <% if (locals.error) { %>
+                <div class="ui-alert ui-alert--danger" role="alert" tabindex="-1">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" style="margin-top:1px" aria-hidden="true">
+                        <path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.2v.3"/>
+                    </svg>
+                    <span><%= error %></span>
+                </div>
+            <% } %>
+
+            <div class="ui-alert ui-alert--danger" id="auth-error-summary" role="alert" tabindex="-1" hidden></div>
+
+            <form action="<%= base_path %>/user/login" method="POST" class="ui-stack" style="gap:var(--space-4)" data-auth-form novalidate>
+
+                <div class="ui-field">
+                    <label class="ui-label" for="username">Username</label>
+                    <input class="ui-input" type="text" id="username" name="username" required
+                           autocomplete="username" placeholder="Masukkan username" aria-describedby="username-error">
+                    <span class="ui-errortext" id="username-error" hidden>
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>
+                        Username wajib diisi.
+                    </span>
+                </div>
+
+                <div class="ui-field">
+                    <label class="ui-label" for="password">Kata sandi</label>
+                    <div class="ui-inputgroup">
+                        <input class="ui-input" type="password" id="password" name="password" required
+                               autocomplete="current-password" placeholder="••••••••" aria-describedby="password-error">
+                        <button class="ui-inputgroup__btn" type="button" data-toggle-pass="password"
+                                aria-pressed="false" aria-label="Tampilkan kata sandi">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="ui-errortext" id="password-error" hidden>
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>
+                        Kata sandi wajib diisi.
+                    </span>
+                </div>
+
+                <button class="ui-btn ui-btn--primary ui-btn--lg" type="submit" style="width:100%">
+                    Masuk ke dashboard
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4.5 12h15m-5.5-5.5L19.5 12 14 17.5"/>
+                    </svg>
+                </button>
+            </form>
+
+            <hr class="ui-divider">
+
+            <p style="font-size:var(--text-12);color:var(--fg-muted);text-align:center">
+                Belum punya akun?
+                <a href="<%= base_path %>/user/register" class="ui-link">Daftar sekarang</a>
+            </p>
+
+            <div class="ui-row" style="justify-content:space-between">
+                <a href="<%= base_path %>/" class="ui-btn ui-btn--ghost ui-btn--sm">&larr; Kembali</a>
+                <a href="<%= base_path %>/login" class="ui-btn ui-btn--ghost ui-btn--sm">Masuk admin</a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<%- include('partials/auth_scripts', { base_path: base_path }) %>

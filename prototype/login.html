@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototype — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<style>
+  .auth {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    min-height: 100dvh;
+  }
+
+  .auth__brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background:
+      radial-gradient(90% 70% at 10% 0%, rgba(30, 58, 95, 0.75) 0%, rgba(15, 23, 42, 0) 60%),
+      var(--surface-2);
+    border-right: 1px solid var(--border);
+  }
+
+  .auth__logo { display: flex; align-items: center; gap: var(--space-2); }
+
+  .auth__claim {
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    max-width: 22ch;
+  }
+
+  .auth__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+
+  .auth__stat { display: flex; flex-direction: column; gap: 2px; }
+  .auth__stat b {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-20);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.02em;
+  }
+  .auth__stat span { font-size: var(--text-11); color: var(--fg-muted); }
+
+  .auth__form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-8);
+    background: var(--bg);
+  }
+
+  .auth__card { width: 100%; max-width: 380px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-4); }
+
+  @media (max-width: 900px) {
+    .auth { grid-template-columns: minmax(0, 1fr); }
+    .auth__brand { padding: var(--space-5); gap: var(--space-5); border-right: 0; border-bottom: 1px solid var(--border); }
+    .auth__claim { font-size: 1.3rem; }
+    .auth__form { padding: var(--space-5); }
+    .auth__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-video"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></g>
+    <g id="i-user"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></g>
+    <g id="i-eye"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></g>
+    <g id="i-warn"><path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.2v.3"/></g>
+    <g id="i-shield"><path d="M12 3.5 5 6v6c0 4 3 7.2 7 8.5 4-1.3 7-4.5 7-8.5V6Z"/><path d="m9 12 2 2 4-4"/></g>
+    <g id="i-arrow"><path d="M4.5 12h15m-5.5-5.5L19.5 12 14 17.5"/></g>
+  </defs>
+</svg>
+
+<div class="auth">
+
+  <!-- ---------- Brand panel ---------- -->
+  <section class="auth__brand" aria-label="Tentang layanan">
+    <div class="auth__logo">
+      <span class="brandmark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-video"/></svg>
+      </span>
+      <div>
+        <div style="font-size:13px;font-weight:600">CCTV Alijaya</div>
+        <div style="font-size:11px;color:var(--fg-muted)">Monitoring &amp; keamanan</div>
+      </div>
+    </div>
+
+    <div class="stack" style="gap:16px">
+      <h1 class="auth__claim">Semua kamera, satu layar kendali.</h1>
+      <p style="font-size:13px;color:var(--fg-muted);max-width:38ch">
+        Pantau 14 titik kamera, tinjau rekaman 30 hari, dan terima peringatan
+        gangguan langsung di perangkat Anda.
+      </p>
+      <div class="row" style="gap:8px">
+        <span class="badge badge--live"><span class="badge__dot" aria-hidden="true"></span> 11 kamera online</span>
+        <span class="badge badge--neutral">uptime 98.2%</span>
+      </div>
+    </div>
+
+    <div class="auth__stats">
+      <div class="auth__stat"><b>14</b><span>kamera terdaftar</span></div>
+      <div class="auth__stat"><b>30</b><span>hari retensi rekaman</span></div>
+      <div class="auth__stat"><b>24/7</b><span>pemantauan</span></div>
+    </div>
+  </section>
+
+  <!-- ---------- Form ---------- -->
+  <section class="auth__form">
+    <div class="auth__card">
+
+      <div>
+        <h2 style="font-size:20px;font-weight:600;letter-spacing:-0.02em">Masuk ke akun</h2>
+        <p style="font-size:12px;color:var(--fg-muted);margin-top:4px">Gunakan akun yang diberikan admin.</p>
+      </div>
+
+      <!-- Error summary: focus target for screen readers -->
+      <div class="alert alert--danger" id="form-summary" role="alert" tabindex="-1" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-top:1px" aria-hidden="true"><use href="#i-warn"/></svg>
+        <span>Periksa kembali data yang Anda masukkan.</span>
+      </div>
+
+      <form class="stack" style="gap:16px" data-demo-form novalidate>
+
+        <div class="field">
+          <label class="label" for="username">Username</label>
+          <input class="input" id="username" name="username" type="text" autocomplete="username"
+                 placeholder="mis. admin" required aria-describedby="username-error">
+          <span class="errortext" id="username-error" hidden>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-warn"/></svg>
+            Username wajib diisi.
+          </span>
+        </div>
+
+        <div class="field">
+          <div class="row row--between">
+            <label class="label" for="password">Kata sandi</label>
+            <a href="#" style="font-size:12px;color:var(--accent-text);font-weight:500;display:inline-flex;align-items:center;min-height:32px;padding:0 2px">Lupa kata sandi?</a>
+          </div>
+          <div class="inputgroup">
+            <input class="input" id="password" name="password" type="password" autocomplete="current-password"
+                   placeholder="••••••••" required aria-describedby="password-error">
+            <button class="inputgroup__btn" type="button" data-toggle-pass="password" aria-pressed="false" aria-label="Tampilkan kata sandi">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-eye"/></svg>
+            </button>
+          </div>
+          <span class="errortext" id="password-error" hidden>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><use href="#i-warn"/></svg>
+            Kata sandi wajib diisi.
+          </span>
+        </div>
+
+        <label class="checkbox">
+          <input type="checkbox" name="remember">
+          Ingat perangkat ini selama 7 hari
+        </label>
+
+        <button class="btn btn--primary btn--lg" type="submit" style="width:100%">
+          Masuk
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </button>
+      </form>
+
+      <div class="row" style="gap:8px;color:var(--fg-muted);font-size:11px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>
+        Koneksi terenkripsi. Jangan bagikan akun Anda.
+      </div>
+
+      <hr class="divider">
+
+      <a href="live.html" class="btn btn--ghost" style="width:100%">Lihat dashboard tanpa login (demo)</a>
+      <a href="admin.html" class="btn btn--ghost" style="width:100%">Buka panel admin (demo)</a>
+    </div>
+  </section>
+
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

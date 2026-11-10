@@ -1,0 +1,162 @@
+/* ==========================================================================
+   CCTV Monitoring — Design Tokens
+   Direction: Swiss/Minimal control-room. Dark-first, dense (8px rhythm),
+   flat surfaces, single accent for state. No glow, no glass blur.
+   Persisted source of truth: design-system/cctv-monitoring/MASTER.md
+   ========================================================================== */
+
+:root {
+  /* --- Type ------------------------------------------------------------ */
+  --font-ui: "Fira Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-11: 0.6875rem;  /* micro label / table meta */
+  --text-12: 0.75rem;    /* table cell, secondary */
+  --text-13: 0.8125rem;  /* body / tile title */
+  --text-14: 0.875rem;   /* body large */
+  --text-16: 1rem;       /* section title */
+  --text-20: 1.25rem;    /* page title */
+  --text-24: 1.5rem;     /* KPI value */
+  --text-32: 2rem;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* --- Spacing (4/8 rhythm, dense) ------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* --- Radii (restrained, Swiss) --------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-pill: 999px;
+
+  /* --- Layout ---------------------------------------------------------- */
+  --rail-w: 56px;
+  --sidebar-w: 236px;
+  --sidebar-w-collapsed: 60px;
+  --drawer-w: 300px;
+  --topbar-h: 56px;
+  --bottomnav-h: 56px;
+
+  /* --- Motion ---------------------------------------------------------- */
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ==========================================================================
+   DARK (default)
+   ========================================================================== */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0f172a;
+  --surface: #192134;
+  --surface-2: #10192e;
+  --surface-3: #1f2a40;
+  --surface-hover: rgba(255, 255, 255, 0.04);
+  --scrim: rgba(2, 6, 23, 0.72);
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --fg: #ffffff;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #7d8ba3;
+
+  --brand: #1e3a5f;
+  --brand-fg: #ffffff;
+  --brand-soft: rgba(30, 58, 95, 0.55);
+
+  --accent: #059669;
+  --accent-fg: #ffffff;
+  --accent-text: #34d399;
+  --accent-soft: rgba(5, 150, 105, 0.14);
+
+  --danger: #dc2626;
+  --danger-fg: #ffffff;
+  --danger-text: #f87171;
+  --danger-soft: rgba(220, 38, 38, 0.14);
+
+  --warn: #d97706;
+  --warn-fg: #1a1206;
+  --warn-text: #fbbf24;
+  --warn-soft: rgba(217, 119, 6, 0.16);
+
+  --info: #2563eb;
+  --info-text: #93c5fd;
+  --info-soft: rgba(37, 99, 235, 0.16);
+
+  --video-bg: #05080f;
+  --focus: #e2e8f0;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================================================
+   LIGHT — every pair below verified ≥4.5:1 for body text
+   ========================================================================== */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-3: #e7edf5;
+  --surface-hover: rgba(15, 23, 42, 0.04);
+  --scrim: rgba(15, 23, 42, 0.45);
+
+  --border: rgba(15, 23, 42, 0.1);
+  --border-strong: rgba(15, 23, 42, 0.2);
+
+  --fg: #0f172a;
+  --fg-muted: #475569;
+  --fg-subtle: #5b6a80;
+
+  --brand: #1e3a5f;
+  --brand-fg: #ffffff;
+  --brand-soft: rgba(30, 58, 95, 0.08);
+
+  --accent: #047857;
+  --accent-fg: #ffffff;
+  --accent-text: #046c4e;
+  --accent-soft: rgba(4, 120, 87, 0.1);
+
+  --danger: #b91c1c;
+  --danger-fg: #ffffff;
+  --danger-text: #b91c1c;
+  --danger-soft: rgba(185, 28, 28, 0.09);
+
+  --warn: #b45309;
+  --warn-fg: #ffffff;
+  --warn-text: #92400e;
+  --warn-soft: rgba(180, 83, 9, 0.1);
+
+  --info: #1d4ed8;
+  --info-text: #1d4ed8;
+  --info-soft: rgba(29, 78, 216, 0.1);
+
+  --video-bg: #0b1220;
+  --focus: #0f172a;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 10px 24px -16px rgba(15, 23, 42, 0.4);
+}

@@ -1,12 +1,69 @@
 // Authentication and middleware utilities
 const session = require('express-session');
+const fs = require('fs');
+const path = require('path');
 const DEBUG_AUTH = process.env.DEBUG_AUTH === '1';
+
+const PROJECT_ROOT = path.join(__dirname, '..');
+
+/**
+ * Session store factory.
+ *
+ * Default: SQLite (persist across restart / auto-update) in a dedicated
+ * sessions.db next to the app. Falls back to MemoryStore when the SQLite
+ * store cannot be created, so a broken session table never blocks startup.
+ *
+ * Override via config.json -> server.session:
+ *   { "store": "memory" }            -> force MemoryStore
+ *   { "sqlite_db": "cameras.db" }    -> reuse the app DB instead
+ *   { "sqlite_table": "sessions" }   -> table name (default)
+ *
+ * Default file is a dedicated sessions.db: cameras.db is tracked by git, so
+ * writing sessions into it would dirty the repository on every login.
+ */
+function createSessionStore(config) {
+    const sessionConfig = (config && config.server && config.server.session) || {};
+
+    if (sessionConfig.store === 'memory') {
+        console.log('[Session] Store: MemoryStore (dipaksa lewat config server.session.store)');
+        return new session.MemoryStore();
+    }
+
+    const table = sessionConfig.sqlite_table || 'sessions';
+    const dbFile = sessionConfig.sqlite_db || 'sessions.db';
+    const dbPath = path.isAbsolute(dbFile) ? dbFile : path.join(PROJECT_ROOT, dbFile);
+
+    try {
+        // Fail fast (and fall back) when the DB file is unusable.
+        if (fs.existsSync(dbPath)) {
+            fs.accessSync(dbPath, fs.constants.R_OK | fs.constants.W_OK);
+        } else {
+            // Will be created on first write — check we may write into its folder.
+            fs.accessSync(path.dirname(dbPath), fs.constants.W_OK);
+        }
+
+        const SQLiteStore = require('connect-sqlite3')(session);
+        const store = new SQLiteStore({
+            table,
+            // connect-sqlite3 joins `dir` and `db` itself, so pass them split.
+            db: path.basename(dbPath),
+            dir: path.dirname(dbPath),
+            concurrentDb: true // PRAGMA journal_mode = wal
+        });
+
+        console.log(`[Session] Store: SQLite (${dbPath}, tabel ${table})`);
+        return store;
+    } catch (err) {
+        console.error(`[Session] SQLite store gagal dipakai (${err.message}). Fallback ke MemoryStore — sesi akan hilang saat restart.`);
+        return new session.MemoryStore();
+    }
+}
 
 function setupSessionMiddleware(app, config) {
     const behindProxy = config.server.behind_https_proxy === true;
     console.log(`[Config] behind_https_proxy: ${behindProxy}`);
 
-    const sessionStore = new session.MemoryStore();
+    const sessionStore = createSessionStore(config);
     const sessionMiddleware = session({
         secret: config.server.session_secret || 'cctv-monitoring-secret-key',
         resave: false,
@@ -91,6 +148,7 @@ function requireAnyAuth(req, res, next) {
 }
 
 module.exports = {
+    createSessionStore,
     setupSessionMiddleware,
     setupGlobalMiddleware,
     requireAuth,

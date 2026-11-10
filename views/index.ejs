@@ -9,15 +9,23 @@
     <link rel="apple-touch-icon" href="<%= base_path %>/icon-192x192.png">
     <title><%= site.title %> - Live Dashboard</title>
     
-    <!-- Fonts & CSS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Shared design tokens + Tailwind config (partials/theme_head.ejs) -->
+    <%- include('partials/theme_head', { base_path: base_path, themeColor: '#0f172a' }) %>
     <script>
+        /* Extend the shared token config with dashboard-specific motion + slate remap */
         tailwind.config = {
+            ...tailwind.config,
             theme: {
+                ...tailwind.config.theme,
                 extend: {
+                    ...tailwind.config.theme.extend,
+                    colors: {
+                        ...tailwind.config.theme.extend.colors,
+                        slate: {
+                            200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b',
+                            600: '#475569', 700: '#2a3448', 800: '#192134', 900: '#10192e', 950: '#0f172a'
+                        }
+                    },
                     animation: {
                         'marquee': 'marquee 30s linear infinite',
                         'fade-in': 'fadeIn 0.5s ease-out forwards',
@@ -28,45 +36,29 @@
                     }
                 }
             }
-        }
+        };
     </script>
-    <link rel="stylesheet" href="<%= base_path %>/css/modern.css">
     <link rel="stylesheet" href="<%= base_path %>/css/leaflet.css" />
     
     <style>
-        /* Theme Variables */
+        /* Theme variables — mapped onto the shared design tokens so every
+           legacy rule on this page follows the same palette as admin. */
         :root {
-            --bg-primary: #020617;
-            --bg-secondary: #0f172a;
-            --bg-tertiary: #1e293b;
-            --text-primary: #f8fafc;
+            --bg-primary: var(--bg);
+            --bg-secondary: var(--surface-2);
+            --bg-tertiary: var(--surface);
+            --text-primary: var(--fg);
             --text-secondary: #cbd5e1;
-            --text-tertiary: #64748b;
-            --border-color: rgba(255,255,255,0.05);
-            --glass-bg: rgba(15, 23, 42, 0.6);
-            --nav-bg: rgba(15, 23, 42, 0.9);
-            --sidebar-bg: #0f172a;
-            --video-border: #1e293b;
-            --empty-slot-text: #1e293b;
-            --scrollbar-thumb: #334155;
+            --text-tertiary: var(--fg-muted);
+            --border-color: var(--border);
+            --glass-bg: var(--surface);
+            --nav-bg: var(--surface);
+            --sidebar-bg: var(--surface-2);
+            --video-border: var(--border);
+            --empty-slot-text: var(--border-strong);
+            --scrollbar-thumb: var(--border-strong);
         }
-        
-        [data-theme="light"] {
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #e2e8f0;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-tertiary: #64748b;
-            --border-color: rgba(0,0,0,0.1);
-            --glass-bg: rgba(255, 255, 255, 0.8);
-            --nav-bg: rgba(255, 255, 255, 0.95);
-            --sidebar-bg: #ffffff;
-            --video-border: #cbd5e1;
-            --empty-slot-text: #cbd5e1;
-            --scrollbar-thumb: #cbd5e1;
-        }
-        
+
         * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
         
         body { 
@@ -134,11 +126,22 @@
             border: 1px dashed var(--empty-slot-text); 
             margin: auto;
         }
-        .camera-item.selected { border-color: #10b981; background: rgba(16, 185, 129, 0.05); }
+        .camera-item.selected { border-color: var(--accent); background: var(--accent-soft); }
         
-        .nav-tab { transition: all 0.2s ease; cursor: pointer; }
-        .nav-tab:hover { background: rgba(255,255,255,0.05); }
-        .nav-tab.active { background: #10b981; color: #020617; }
+        .nav-tab {
+            height: 26px;
+            padding: 0 10px;
+            border: 0;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--fg-muted);
+            font-size: var(--text-11);
+            font-weight: var(--weight-semibold);
+            transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+            cursor: pointer;
+        }
+        .nav-tab:hover { background: var(--surface-hover); color: var(--fg); }
+        .nav-tab.active { background: var(--accent); color: var(--accent-fg); }
         .custom-div-icon { background: none !important; border: none !important; }
         .blink { animation: blink 1s steps(5, start) infinite; }
         @keyframes blink { to { visibility: hidden; } }
@@ -146,25 +149,23 @@
         /* Theme Toggle Button */
         .theme-toggle {
             position: relative;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: transparent;
+            border: 1px solid transparent;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            color: var(--fg-muted);
+            transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
         }
-        .theme-toggle:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-        }
+        .theme-toggle:hover { background: var(--surface-hover); color: var(--fg); }
         .theme-toggle svg {
             width: 18px;
             height: 18px;
-            color: var(--text-primary);
+            color: currentColor;
         }
         
         /* Theme-aware utility classes */
@@ -222,8 +223,8 @@
         .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 3px solid rgba(16, 185, 129, 0.2);
-            border-top: 3px solid #10b981;
+            border: 3px solid var(--accent-soft);
+            border-top: 3px solid var(--accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -341,6 +342,59 @@
     
     <script src="<%= base_path %>/js/hls.min.js"></script>
     <script src="<%= base_path %>/js/leaflet.js"></script>
+
+    <!-- ======================================================================
+         Dashboard-specific styling on top of tokens.css + ui.css
+         (kept page-local so the shared component sheet stays admin-agnostic)
+         ====================================================================== -->
+    <style>
+        /* Bottom navigation items (classes are swapped by switchMode) */
+        .ui-bnav__icon {
+            display: grid; place-items: center;
+            width: 34px; height: 34px;
+            border-radius: var(--radius-md);
+            color: var(--fg-muted);
+            transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+        }
+        .ui-bnav__icon.is-active { background: var(--accent-soft); color: var(--accent-text); }
+        .ui-bnav__label { font-size: 11px; font-weight: var(--weight-medium); color: var(--fg-muted); }
+        .ui-bnav__label.is-active { color: var(--accent-text); font-weight: var(--weight-semibold); }
+
+        /* Per-camera status text (classes are swapped by updateCameraStatusUI) */
+        .ui-status-text {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: var(--weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .ui-status-text.is-online { color: var(--accent-text); }
+        .ui-status-text.is-offline { color: var(--danger-text); }
+        .ui-status-text.is-checking { color: var(--fg-subtle); }
+
+        /* Camera list rows */
+        .camera-item:hover { background: var(--surface-hover); }
+        .camera-item:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+        .camera-item.selected { border-color: var(--accent) !important; background: var(--accent-soft) !important; }
+
+        /* Video tiles: flat surfaces, no lift, no glow */
+        .live-grid { gap: 8px; }
+        .video-wrapper {
+            border-radius: var(--radius-lg);
+            border-color: var(--border);
+            box-shadow: none;
+        }
+        .video-wrapper:hover { border-color: var(--border-strong); }
+        .hover-lift, .hover-lift:hover { transform: none; box-shadow: none; }
+        .video-wrapper video { object-fit: contain; background: #000; }
+
+        /* Sidebar toggle stays a thin edge handle */
+        #sidebarToggle { transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+        #sidebarToggle:hover { background: var(--surface-3); color: var(--fg); }
+
+        /* Sticky-free scrollbars inside lists */
+        #camera-list, #mobile-list-container { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+    </style>
 </head>
 <body class="antialiased h-screen flex flex-col overflow-hidden">
     <%- include('partials/global_modal') %>
@@ -364,273 +418,227 @@
         </div>
     </div>
 
-    <!-- Header Navigation -->
-    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 flex-none h-14 lg:h-16 flex items-center z-50">
-        <div class="w-full px-6 flex justify-between items-center gap-4">
-            <!-- Brand -->
-            <div class="flex items-center gap-4 flex-none cursor-pointer" onclick="window.location.href='<%= base_path %>/'">
-                <div class="p-2 bg-emerald-500/20 rounded-lg hidden sm:block">
-                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-sm font-black text-white tracking-tight uppercase leading-none"><%= site.title %></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1"><%= site.footer %></p>
-                </div>
+    <!-- ===== Topbar ===== -->
+    <header class="ui-topbar" style="gap:10px">
+        <a class="ui-row" href="<%= base_path %>/" style="gap:8px;min-width:0">
+            <span class="ui-brandmark" aria-hidden="true">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/>
+                </svg>
+            </span>
+            <div style="min-width:0">
+                <div class="ui-topbar__title" style="overflow:hidden;text-overflow:ellipsis;max-width:26ch"><%= site.title %></div>
+                <div class="ui-topbar__sub ui-hide-sm"><%= site.footer %></div>
             </div>
+        </a>
 
-            <!-- Central Area (Desktop Only) -->
-            <div class="hidden lg:flex flex-1 items-center justify-center gap-4">
-                <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
-                    <button onclick="switchMode('live')" id="tab-live" class="nav-tab active px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all">Live</button>
-                    <button onclick="switchMode('map')" id="tab-map" class="nav-tab px-4 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 uppercase tracking-widest transition-all">Peta</button>
-                </div>
-                
-                <!-- Grid Layout Presets -->
-                <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 gap-1">
-                    <button onclick="setGridPreset(1)" class="px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:text-white transition-all" title="1x1 Grid">1×1</button>
-                    <button onclick="setGridPreset(4)" class="px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:text-white transition-all" title="2x2 Grid">2×2</button>
-                    <button onclick="setGridPreset(9)" class="px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:text-white transition-all" title="3x3 Grid">3×3</button>
-                    <button onclick="setGridPreset(16)" class="px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:text-white transition-all" title="4x4 Grid">4×4</button>
-                </div>
-            </div>
+        <div class="ui-vrule ui-hide-sm" aria-hidden="true"></div>
 
-            <!-- User/Weather -->
-            <div class="flex items-center gap-2 lg:gap-3 flex-none">
-                <!-- Desktop Clock & Status -->
-                <div class="hidden lg:flex items-center gap-4 px-4 py-1.5 bg-slate-950/50 rounded-xl border border-slate-800/50 mr-2">
-                    <div class="flex items-center gap-3">
-                        <span id="topbar-clock" class="text-sm font-black text-white leading-none tracking-tighter">00:00:00</span>
-                        <div class="w-px h-3 bg-slate-800"></div>
-                        <span id="topbar-date" class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">01 Januari 2026</span>
-                    </div>
-                    <div class="h-6 w-px bg-slate-800"></div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-emerald-500 rounded-full blink"></div>
-                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Server Live</span>
-                    </div>
-                </div>
-
-                <!-- Mobile Date Button -->
-                <button onclick="showTimeModal()" class="lg:hidden flex items-center justify-center w-9 h-9 bg-slate-800 text-white rounded-xl border border-slate-700 shadow-lg active:scale-95 transition">
-                    <span id="mobile-date-num" class="text-sm font-black"><%= new Date().getDate() %></span>
-                </button>
-
-                <div id="weather-widget" onclick="showWeatherDetail()" class="flex items-center gap-2 px-3 py-1.5 bg-slate-800/50 hover:bg-slate-700/50 cursor-pointer rounded-xl border border-slate-700/50 transition duration-300">
-                    <span id="weather-icon" class="text-sm">🌤️</span>
-                    <span id="weather-temp" class="text-xs font-bold text-slate-200">--°C</span>
-                </div>
-                
-                <!-- Theme Toggle Button -->
-                <button onclick="cycleTheme()" class="theme-toggle" title="Ganti Tema" id="theme-toggle-btn">
-                    <svg id="theme-icon-dark" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                    </svg>
-                    <svg id="theme-icon-light" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                    <svg id="theme-icon-auto" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                    </svg>
-                </button>
-                
-                <div class="hidden lg:flex items-center gap-1">
-                    <a href="<%= base_path %>/archive" class="px-3 py-2 text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-widest transition">REKAMAN</a>
-                    <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-                        <a href="<%= base_path %>/admin" class="px-3 py-2 text-[10px] font-bold text-emerald-400 hover:text-emerald-300 uppercase tracking-widest transition">Admin</a>
-                        <a href="<%= base_path %>/user/logout" class="ml-1 px-3 py-1.5 bg-rose-500/10 text-rose-500 text-[10px] font-black rounded-lg hover:bg-rose-500 hover:text-white transition uppercase tracking-widest">Logout</a>
-                    <% } else if (typeof isCustomer !== 'undefined' && isCustomer) { %>
-                        <span onclick="window.location.href='<%= base_path %>/user/account'" class="hidden md:block text-[10px] font-bold text-emerald-400 hover:text-emerald-300 cursor-pointer uppercase tracking-widest mx-2"><%= (customer.full_name || customer.username).toUpperCase() %></span>
-                        <a href="<%= base_path %>/user/logout" class="px-3 py-1.5 bg-rose-500/10 text-rose-500 text-[10px] font-black rounded-lg hover:bg-rose-500 hover:text-white transition uppercase tracking-widest">Logout</a>
-                    <% } else { %>
-                        <a href="<%= base_path %>/user/login" class="ml-2 px-4 py-2 bg-emerald-600 text-white text-[10px] font-black rounded-xl hover:bg-emerald-500 transition shadow-lg shadow-emerald-500/20 uppercase tracking-widest">Login</a>
-                    <% } %>
-                </div>
-            </div>
+        <div class="ui-seg" role="tablist" aria-label="Mode tampilan">
+            <button onclick="switchMode('live')" id="tab-live" class="nav-tab active" role="tab" aria-selected="true">Live</button>
+            <button onclick="switchMode('map')" id="tab-map" class="nav-tab" role="tab" aria-selected="false">Peta</button>
         </div>
-    </nav>
 
-    <!-- Mobile Bottom Navigation -->
-    <div class="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 flex items-center justify-around px-2 z-[100] shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.5)]">
-        <button onclick="switchMode('live')" id="m-tab-live" class="flex flex-col items-center gap-1 px-3 group">
-            <div class="p-1.5 rounded-xl bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all duration-300" id="m-icon-live">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            </div>
-            <span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest" id="m-text-live">Live</span>
+        <div class="ui-seg ui-hide-md" role="group" aria-label="Batas jumlah kamera">
+            <button onclick="setGridPreset(1)" class="ui-seg__btn" title="Maksimal 1 kamera">1x1</button>
+            <button onclick="setGridPreset(4)" class="ui-seg__btn" title="Maksimal 4 kamera">2x2</button>
+            <button onclick="setGridPreset(9)" class="ui-seg__btn" title="Maksimal 9 kamera">3x3</button>
+            <button onclick="setGridPreset(16)" class="ui-seg__btn" title="Maksimal 16 kamera">4x4</button>
+        </div>
+
+        <div class="ui-topbar__spacer"></div>
+
+        <div class="ui-row ui-hide-md" style="gap:8px">
+            <span id="topbar-clock" class="ui-num" style="font-size:14px;font-weight:600;letter-spacing:-0.02em">00:00:00</span>
+            <span class="ui-vrule" aria-hidden="true"></span>
+            <span id="topbar-date" style="font-size:11px;color:var(--fg-muted);white-space:nowrap">01 Januari 2026</span>
+            <span class="ui-badge ui-badge--live"><span class="ui-badge__dot pulse-dot" aria-hidden="true"></span> Server live</span>
+        </div>
+
+        <!-- Mobile: jam -->
+        <button onclick="showTimeModal()" class="ui-btn ui-btn--icon lg:hidden" aria-label="Lihat waktu dan tanggal">
+            <span id="mobile-date-num" class="ui-num" style="font-size:13px;font-weight:600"><%= new Date().getDate() %></span>
         </button>
-        
-        <button onclick="switchMode('map')" id="m-tab-map" class="flex flex-col items-center gap-1 px-3 group">
-            <div class="p-1.5 rounded-xl text-slate-500 transition-all duration-300" id="m-icon-map">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m6 13l5.447-2.724A1 1 0 0121 18.382V7.618a1 1 0 01-1.447-.894L15 9m-6 11V7m6 11V9"></path></svg>
-            </div>
-            <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest" id="m-text-map">Peta</span>
+
+        <button id="weather-widget" onclick="showWeatherDetail()" class="ui-btn ui-btn--sm" style="gap:6px" aria-label="Detail cuaca">
+            <span id="weather-icon" style="font-size:12px" aria-hidden="true">&#127780;</span>
+            <span id="weather-temp" style="font-weight:600">--&deg;C</span>
+        </button>
+
+        <button onclick="cycleTheme()" class="theme-toggle" title="Ganti tema" id="theme-toggle-btn" aria-label="Ganti tema">
+            <svg id="theme-icon-dark" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+            <svg id="theme-icon-light" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <svg id="theme-icon-auto" class="hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+        </button>
+
+        <div class="ui-hide-sm ui-row" style="gap:4px">
+            <a href="<%= base_path %>/archive" class="ui-btn ui-btn--ghost ui-btn--sm">Rekaman</a>
+            <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+                <a href="<%= base_path %>/admin" class="ui-btn ui-btn--ghost ui-btn--sm" style="color:var(--accent-text)">Admin</a>
+                <a href="<%= base_path %>/user/logout" class="ui-btn ui-btn--danger ui-btn--sm">Keluar</a>
+            <% } else if (typeof isCustomer !== 'undefined' && isCustomer) { %>
+                <a href="<%= base_path %>/user/account" class="ui-btn ui-btn--ghost ui-btn--sm"><%= (customer.full_name || customer.username) %></a>
+                <a href="<%= base_path %>/user/logout" class="ui-btn ui-btn--danger ui-btn--sm">Keluar</a>
+            <% } else { %>
+                <a href="<%= base_path %>/user/login" class="ui-btn ui-btn--primary ui-btn--sm">Masuk</a>
+            <% } %>
+        </div>
+    </header>
+
+    <!-- ===== Mobile bottom navigation ===== -->
+    <nav class="ui-bottomnav" aria-label="Navigasi utama">
+        <button onclick="switchMode('live')" id="m-tab-live" class="ui-bottomnav__item" aria-label="Tampilan live">
+            <span class="ui-bnav__icon is-active" id="m-icon-live">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></svg>
+            </span>
+            <span class="ui-bnav__label is-active" id="m-text-live">Live</span>
+        </button>
+
+        <button onclick="switchMode('map')" id="m-tab-map" class="ui-bottomnav__item" aria-label="Tampilan peta">
+            <span class="ui-bnav__icon" id="m-icon-map">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 4 6 2 5.5-2v14L15 20l-6-2-5.5 2V6Z"/><path d="M9 4v14M15 6v14"/></svg>
+            </span>
+            <span class="ui-bnav__label" id="m-text-map">Peta</span>
         </button>
 
         <% if (typeof isCustomer !== 'undefined' && isCustomer || typeof isAdmin !== 'undefined' && isAdmin) { %>
-            <a href="<%= base_path %>/archive" class="flex flex-col items-center gap-1 px-3 group">
-                <div class="p-1.5 rounded-xl text-slate-500">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Rekaman</span>
+            <a href="<%= base_path %>/archive" class="ui-bottomnav__item">
+                <span class="ui-bnav__icon">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.5"/></svg>
+                </span>
+                <span class="ui-bnav__label">Rekaman</span>
             </a>
 
-            <button onclick="window.location.href='<%= base_path %>/user/account'" class="flex flex-col items-center gap-1 px-3 group">
-                <div class="p-1.5 rounded-xl text-slate-500 transition-all duration-300" id="m-icon-account">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </div>
-                <span class="text-[8px] font-black text-slate-500 uppercase tracking-widest" id="m-text-account">Akun</span>
+            <button onclick="window.location.href='<%= base_path %>/user/account'" class="ui-bottomnav__item">
+                <span class="ui-bnav__icon" id="m-icon-account">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>
+                </span>
+                <span class="ui-bnav__label" id="m-text-account">Akun</span>
             </button>
 
-            <button onclick="openReportModal()" class="flex flex-col items-center gap-1 px-3 group text-amber-500">
-                <div class="p-1.5 rounded-xl text-amber-500/50 group-hover:text-amber-500 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                </div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Lapor</span>
+            <button onclick="openReportModal()" class="ui-bottomnav__item" style="color:var(--warn-text)">
+                <span class="ui-bnav__icon" style="color:var(--warn-text)">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5 21 20H3Z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>
+                </span>
+                <span class="ui-bnav__label">Lapor</span>
             </button>
         <% } else { %>
-            <a href="<%= base_path %>/user/login" class="flex flex-col items-center gap-1 px-3 group text-emerald-500">
-                <div class="p-1.5 rounded-xl bg-emerald-500/10 text-emerald-500 transition-all duration-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                </div>
-                <span class="text-[8px] font-black uppercase tracking-widest">Login</span>
+            <a href="<%= base_path %>/user/login" class="ui-bottomnav__item" style="color:var(--accent-text)">
+                <span class="ui-bnav__icon is-active">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V5.5H3v13h11V16"/><path d="M9 12h11m-3.5-3.5L20 12l-3.5 3.5"/></svg>
+                </span>
+                <span class="ui-bnav__label is-active">Masuk</span>
             </a>
         <% } %>
-    </div>
+    </nav>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        <main class="flex-1 flex flex-col overflow-hidden bg-slate-950 relative">
-            <div id="main-content-display" class="flex-none lg:flex-1 overflow-hidden relative flex flex-col items-center justify-center p-0 lg:p-4 bg-black">
-                <div id="live-display" class="w-full flex flex-col gap-3">
+    <!-- ===== Main content ===== -->
+    <div style="flex:1;min-height:0;display:flex;overflow:hidden">
+        <main class="ui-main" style="flex:1;min-width:0;background:var(--bg)">
+            <div id="main-content-display" style="flex:1 1 auto;min-height:0;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;background:var(--video-bg)">
+                <div id="live-display" style="width:100%;height:100%;display:flex;flex-direction:column;gap:8px;overflow:hidden">
                     <div id="live-grid" class="live-grid grid-1 flex-1 min-h-0">
-                        <div class="empty-slot animate-fade-in flex-col gap-4">
-                            <svg class="w-12 h-12 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            <p class="text-xs font-black uppercase tracking-widest text-slate-800">Pilih Kamera</p>
-                        </div>
-                    </div>
-                    <% if (site.running_text) { %>
-                    <div class="w-full bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden flex items-center shadow-lg backdrop-blur-sm">
-                        <div class="bg-emerald-600 text-slate-950 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest z-10 flex-none shadow-[10px_0_20px_-5px_rgba(0,0,0,0.5)] flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 bg-slate-950 rounded-full animate-pulse"></div>
-                            INFO
-                        </div>
-                        <div class="flex-1 overflow-hidden relative flex items-center h-full">
-                            <div class="animate-marquee whitespace-nowrap px-4 py-2">
-                                <p class="text-xs font-bold text-slate-300 inline-block">
-                                    <%= site.running_text %>
-                                </p>
+                        <div class="empty-slot" style="border:1px dashed var(--border-strong);background:var(--surface-2);border-radius:var(--radius-lg);max-width:520px;aspect-ratio:auto;padding:32px">
+                            <div style="display:grid;place-items:center;gap:10px;text-align:center;color:var(--fg-muted)">
+                                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color:var(--fg-subtle)" aria-hidden="true"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></svg>
+                                <strong style="font-size:13px;color:var(--fg);font-weight:600">Belum ada kamera dipilih</strong>
+                                <span style="font-size:12px">Pilih kamera dari daftar untuk mulai memantau.</span>
                             </div>
                         </div>
                     </div>
-                    <% } %>
                 </div>
-                <div id="map-display" class="hidden w-full h-full animate-fade-in absolute inset-0 p-0 lg:p-4">
-                    <div id="map" class="w-full h-full lg:rounded-2xl border-b lg:border border-slate-800 overflow-hidden"></div>
+
+                <div id="map-display" class="hidden" style="position:absolute;inset:0;padding:8px">
+                    <div id="map" style="width:100%;height:100%;border-radius:var(--radius-lg);border:1px solid var(--border);overflow:hidden"></div>
                 </div>
             </div>
 
-            <!-- Mobile List (Hidden on desktop) -->
-            <div id="mobile-list-container" class="lg:hidden flex-1 overflow-y-auto p-4 space-y-4 bg-slate-900/50 border-t border-slate-800 pb-24 sidebar-scroll">
-                <div class="relative">
-                    <input type="text" id="mobile-search" placeholder="Cari Kamera..." 
-                        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none pl-10 uppercase font-bold">
-                    <svg class="w-4 h-4 text-slate-600 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-                <div id="mobile-camera-list" class="space-y-2 pb-24">
-                    <!-- Cloned from JS -->
-                </div>
-                <!-- Mobile Status Footer -->
-                <div class="mt-4 p-3 rounded-xl bg-slate-950/50 border border-slate-800/50">
-                    <div class="flex items-center justify-between text-[9px] text-slate-600">
-                        <span class="flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            <span id="mobileOnlineCount">0</span> Online
-                        </span>
-                        <span class="flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                            <span id="mobileOfflineCount">0</span> Offline
-                        </span>
-                    </div>
+            <!-- Daftar kamera (mobile) -->
+            <div id="mobile-list-container" class="lg:hidden sidebar-scroll" style="flex:1;overflow-y:auto;padding:12px;background:var(--bg);border-top:1px solid var(--border);padding-bottom:calc(var(--bottomnav-h) + 16px)">
+                <label class="ui-search" style="margin-bottom:12px">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4.5 4.5"/></svg>
+                    <input type="text" id="mobile-search" placeholder="Cari kamera" aria-label="Cari kamera">
+                </label>
+
+                <div id="mobile-camera-list" style="display:flex;flex-direction:column;gap:6px"></div>
+
+                <div class="ui-row" style="justify-content:space-between;padding:10px 4px;margin-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--fg-muted)">
+                    <span class="ui-row" style="gap:6px"><span class="ui-dot dot--live" aria-hidden="true"></span> <span id="mobileOnlineCount" class="ui-num">0</span> online</span>
+                    <span class="ui-row" style="gap:6px"><span class="ui-dot dot--offline" aria-hidden="true"></span> <span id="mobileOfflineCount" class="ui-num">0</span> offline</span>
                 </div>
             </div>
         </main>
 
-        <!-- Sidebar Toggle Button (Desktop Only) -->
-        <button id="sidebarToggle" onclick="toggleSidebar()" class="hidden fixed right-0 top-1/2 -translate-y-1/2 z-50 w-8 h-16 bg-slate-800/90 hover:bg-slate-700 border border-slate-700 border-r-0 rounded-l-xl items-center justify-center transition-all duration-300 shadow-xl backdrop-blur-sm group" title="Buka Sidebar">
-            <svg id="sidebarArrow" class="w-4 h-4 text-slate-400 group-hover:text-white transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+        <!-- Tombol buka sidebar (desktop) -->
+        <button id="sidebarToggle" onclick="toggleSidebar()" class="hidden" style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:50;width:22px;height:64px;display:none;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border-strong);border-right:0;border-radius:var(--radius-md) 0 0 var(--radius-md);color:var(--fg-muted);cursor:pointer" title="Buka daftar kamera" aria-label="Buka daftar kamera">
+            <svg id="sidebarArrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15 19l-7-7 7-7"></path>
             </svg>
         </button>
 
-        <!-- Sidebar Section (Desktop Only) - Collapsible -->
-        <aside id="desktopSidebar" class="hidden lg:flex w-[420px] bg-slate-900/95 backdrop-blur-xl border-l border-slate-800 flex-col flex-none shadow-2xl z-40 transition-all duration-300 ease-in-out sidebar-expanded">
-            <div class="flex items-center justify-between p-4 border-b border-slate-800">
-                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-                    Daftar Kamera
-                </h3>
-                <div class="flex items-center gap-2">
-                    <span id="cameraCount" class="text-[9px] font-bold text-slate-600 bg-slate-800 px-2 py-1 rounded-full"><%= cameras.length %></span>
-                    <button onclick="toggleSidebar()" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-500 hover:text-white transition group" title="Tutup Sidebar">
-                        <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
+        <!-- Sidebar daftar kamera (desktop) -->
+        <aside id="desktopSidebar" class="hidden lg:flex sidebar-expanded" aria-label="Daftar kamera" style="width:300px;min-width:300px;flex-direction:column;background:var(--surface-2);border-left:1px solid var(--border);z-index:40">
+
+            <div class="ui-row" style="justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border)">
+                <div class="ui-row" style="gap:8px;min-width:0">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color:var(--fg-muted)" aria-hidden="true"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></svg>
+                    <strong style="font-size:13px;font-weight:600">Kamera</strong>
+                    <span id="cameraCount" class="ui-badge ui-badge--neutral"><%= cameras.length %></span>
                 </div>
+                <button onclick="toggleSidebar()" class="ui-btn ui-btn--icon" title="Tutup daftar kamera" aria-label="Tutup daftar kamera">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
-            <div class="p-4 border-b border-slate-800">
-                <div class="relative">
-                    <input type="text" id="camera-search" placeholder="Cari kamera..." class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 pl-10 transition-all placeholder:text-slate-600">
-                    <svg class="w-3.5 h-3.5 text-slate-600 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
+
+            <div style="padding:10px 12px;border-bottom:1px solid var(--border)">
+                <label class="ui-search">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 4.5 4.5"/></svg>
+                    <input type="text" id="camera-search" placeholder="Cari kamera atau lokasi" aria-label="Cari kamera">
+                </label>
             </div>
-            <div id="camera-list" class="flex-1 overflow-y-auto sidebar-scroll p-3 space-y-2">
+
+            <div id="camera-list" class="sidebar-scroll" style="flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px">
                 <% cameras.forEach(camera => { %>
-                <div class="camera-item glass-panel p-2.5 rounded-xl border border-slate-800/80 hover:border-emerald-500/30 hover:bg-slate-800/40 transition-all duration-200 group cursor-pointer" 
-                    data-id="<%= camera.id %>" data-nama="<%= camera.nama.toLowerCase() %>" onclick="toggleCameraSelection('<%= camera.id %>')">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 bg-slate-950 rounded-lg flex items-center justify-center border border-slate-800 overflow-hidden relative shrink-0">
-                            <svg class="w-4 h-4 text-slate-700 group-hover:text-emerald-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            <!-- Status Badge -->
-                            <div class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-slate-950 camera-status-badge" data-camera-id="<%= camera.id %>" title="Checking...">
-                                <div class="w-full h-full rounded-full bg-slate-600 animate-pulse"></div>
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-1.5">
-                                <h4 class="text-[11px] font-bold text-slate-200 truncate group-hover:text-white transition"><%= camera.nama %></h4>
-                                <% if (!camera.isPlayable) { %>
-                                    <svg class="w-2.5 h-2.5 text-rose-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                                <% } %>
-                            </div>
-                            <p class="text-[8px] text-sky-400/80 font-bold uppercase truncate tracking-wide"><%= camera.lokasi || 'Live' %></p>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span class="text-[7px] font-bold <%= camera.isPlayable ? 'text-emerald-500/80' : 'text-rose-500/80' %> uppercase tracking-widest">
-                                    <%= (camera.level || 'umum').toUpperCase() %>
-                                </span>
-                                <span class="text-[7px] font-bold text-slate-600 uppercase tracking-widest camera-status-text" data-camera-id="<%= camera.id %>">
-                                    • Checking...
-                                </span>
-                            </div>
-                        </div>
-                        <div class="status-indicator hidden w-2 h-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 shrink-0"></div>
+                <div class="camera-item" data-id="<%= camera.id %>" data-nama="<%= camera.nama.toLowerCase() %>" onclick="toggleCameraSelection('<%= camera.id %>')"
+                     role="button" tabindex="0"
+                     style="display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid transparent;border-radius:var(--radius-md);cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)">
+                    <div style="position:relative;width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);color:var(--fg-subtle)">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></svg>
+                        <span class="camera-status-badge" data-camera-id="<%= camera.id %>" title="Memeriksa..." style="position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;border:2px solid var(--surface-2);overflow:hidden">
+                            <div class="w-full h-full rounded-full bg-slate-600 animate-pulse"></div>
+                        </span>
                     </div>
+
+                    <div style="flex:1;min-width:0">
+                        <div class="ui-row" style="gap:4px;min-width:0">
+                            <h4 style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><%= camera.nama %></h4>
+                            <% if (!camera.isPlayable) { %>
+                                <svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20" style="color:var(--danger-text);flex:none" aria-label="Butuh akses" role="img"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                            <% } %>
+                        </div>
+                        <p style="font-size:11px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><%= camera.lokasi || 'Live' %></p>
+                        <div class="ui-row" style="gap:6px;margin-top:1px">
+                            <span style="font-size:10px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:<%= camera.isPlayable ? 'var(--fg-subtle)' : 'var(--danger-text)' %>">
+                                <%= (camera.level || 'umum').toUpperCase() %>
+                            </span>
+                            <span class="camera-status-text ui-status-text is-checking" data-camera-id="<%= camera.id %>">memeriksa...</span>
+                        </div>
+                    </div>
+
+                    <span class="status-indicator hidden" style="width:6px;height:6px;border-radius:50%;background:var(--accent-text);flex:none" aria-hidden="true"></span>
                 </div>
                 <% }) %>
             </div>
-            <!-- Sidebar Footer -->
-            <div class="p-3 border-t border-slate-800/50 bg-slate-900/50">
-                <div class="flex items-center justify-between text-[9px] text-slate-600">
-                    <span class="flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span id="sidebarOnlineCount">0</span> Online
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                        <span id="sidebarOfflineCount">0</span> Offline
-                    </span>
-                </div>
+
+            <div class="ui-row" style="justify-content:space-between;padding:10px 12px;border-top:1px solid var(--border);font-size:11px;color:var(--fg-muted)">
+                <span class="ui-row" style="gap:6px"><span class="ui-dot dot--live" aria-hidden="true"></span> <span id="sidebarOnlineCount" class="ui-num">0</span> online</span>
+                <span class="ui-row" style="gap:6px"><span class="ui-dot dot--offline" aria-hidden="true"></span> <span id="sidebarOfflineCount" class="ui-num">0</span> offline</span>
             </div>
         </aside>
     </div>
@@ -815,9 +823,12 @@
 
             if (count === 0) {
                 grid.className = 'live-grid grid-1 flex-1 min-h-0';
-                grid.innerHTML = `<div class="empty-slot animate-fade-in flex-col gap-4">
-                    <svg class="w-12 h-12 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                    <p class="text-xs font-black uppercase tracking-widest text-slate-800">Pilih Kamera</p>
+                grid.innerHTML = `<div class="empty-slot animate-fade-in" style="border:1px dashed var(--border-strong);background:var(--surface-2);border-radius:var(--radius-lg);max-width:520px;aspect-ratio:auto;padding:32px">
+                    <div style="display:grid;place-items:center;gap:10px;text-align:center;color:var(--fg-muted)">
+                        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color:var(--fg-subtle)" aria-hidden="true"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></svg>
+                        <strong style="font-size:13px;color:var(--fg);font-weight:600">Belum ada kamera dipilih</strong>
+                        <span style="font-size:12px">Pilih kamera dari daftar untuk mulai memantau.</span>
+                    </div>
                 </div>`;
                 return;
             }
@@ -836,44 +847,51 @@
                 const cam = cameras.find(c => String(c.id) === id);
                 const isEmbed = cam && cam.camera_type === 'embed';
                 const hasAi = cam && (cam.ai_enabled === 1 || cam.ai_enabled === '1' || cam.ai_enabled === true);
-                
+
                 return `
-                <div class="video-wrapper group relative bg-black aspect-video rounded-none overflow-hidden border border-slate-900 flex items-center justify-center hover-lift" id="wrapper-${id}">
-                    ${isEmbed ? `<div id="embed-${id}" class="w-full h-full"></div>` : `
-                        <video id="video-${id}" class="w-full h-full object-cover lg:object-contain" playsinline autoplay muted></video>
+                <div class="video-wrapper group hover-lift" id="wrapper-${id}">
+                    ${isEmbed ? `<div id="embed-${id}" style="width:100%;height:100%"></div>` : `
+                        <video id="video-${id}" playsinline autoplay muted></video>
                         <div class="video-loading" id="loading-${id}">
                             <div class="loading-spinner"></div>
-                            <span class="text-xs text-slate-300 font-medium">Loading stream...</span>
+                            <span style="font-size:11px;color:var(--fg-muted)">Menghubungkan stream…</span>
                         </div>
                     `}
-                    <!-- Label -->
-                    <div class="absolute top-2 left-2 px-2 py-1 bg-slate-950/80 rounded text-[8px] font-black ${isEmbed ? 'text-cyan-400' : 'text-emerald-500'} uppercase border ${isEmbed ? 'border-cyan-500/20' : 'border-emerald-500/20'} z-10 flex items-center gap-1.5">
-                        ${cam?.nama || 'Camera'} ${isEmbed ? '🌐' : ''}
-                        <div class="inline-block w-1.5 h-1.5 bg-current rounded-full pulse-dot"></div>
+
+                    <!-- Judul kamera + status -->
+                    <div style="position:absolute;inset:0 0 auto 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:8px 10px;background:linear-gradient(180deg,rgba(0,0,0,.66),transparent);pointer-events:none;z-index:10">
+                        <div style="min-width:0">
+                            <div class="ui-row" style="gap:6px;min-width:0">
+                                ${isEmbed
+                                    ? `<span class="ui-badge ui-badge--info" style="height:16px">Embed</span>`
+                                    : `<span class="pulse-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent-text);display:inline-block;flex:none"></span>`}
+                                <span style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.6)">${cam?.nama || 'Kamera'}</span>
+                            </div>
+                            <div style="font-size:11px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cam?.lokasi || ''}</div>
+                        </div>
                     </div>
-                    <!-- AI Counter Overlay -->
+
+                    <!-- Overlay AI counter -->
                     ${hasAi ? `
-                    <div class="absolute top-2 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-950/90 backdrop-blur-md rounded-xl border border-emerald-500/40 text-white flex items-center gap-2 shadow-2xl z-10 text-[9px] font-bold select-none pointer-events-none" id="ai-overlay-${id}">
-                        <div class="flex items-center gap-1 text-emerald-400">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="font-black text-[8px] tracking-wider uppercase">AI Live</span>
-                        </div>
-                        <div class="h-3 w-px bg-slate-800"></div>
-                        <div class="flex items-center gap-2">
-                            <span title="Orang" class="flex items-center gap-1">👤 <strong id="ai-count-person-${id}" class="text-emerald-300 font-black">0</strong></span>
-                            <span title="Motor" class="flex items-center gap-1">🏍️ <strong id="ai-count-motorcycle-${id}" class="text-emerald-300 font-black">0</strong></span>
-                            <span title="Mobil" class="flex items-center gap-1">🚗 <strong id="ai-count-car-${id}" class="text-emerald-300 font-black">0</strong></span>
-                            <span title="Truk" class="flex items-center gap-1">🚛 <strong id="ai-count-truck-${id}" class="text-emerald-300 font-black">0</strong></span>
-                        </div>
+                    <div id="ai-overlay-${id}" style="position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:var(--radius-md);background:rgba(5,8,15,.86);border:1px solid var(--border-strong);color:#fff;z-index:10;pointer-events:none">
+                        <span class="ui-row" style="gap:4px;color:var(--accent-text);font-size:10px;font-weight:600">
+                            <span class="pulse-dot" style="width:5px;height:5px;border-radius:50%;background:currentColor"></span> AI
+                        </span>
+                        <span style="width:1px;height:12px;background:var(--border-strong)"></span>
+                        <span class="ui-num" style="font-size:11px">Orang <strong id="ai-count-person-${id}" style="color:var(--accent-text)">0</strong></span>
+                        <span class="ui-num" style="font-size:11px">Motor <strong id="ai-count-motorcycle-${id}" style="color:var(--accent-text)">0</strong></span>
+                        <span class="ui-num" style="font-size:11px">Mobil <strong id="ai-count-car-${id}" style="color:var(--accent-text)">0</strong></span>
+                        <span class="ui-num" style="font-size:11px">Truk <strong id="ai-count-truck-${id}" style="color:var(--accent-text)">0</strong></span>
                     </div>
                     ` : ''}
-                    <!-- Controls Overlay -->
-                    ${!isEmbed ? `<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex gap-2 z-20">
-                        <button onclick="takeScreenshot('video-${id}', '${cam?.nama || 'Camera'}')" class="p-1.5 bg-slate-950/80 text-white rounded-lg hover:bg-blue-600 transition shadow-xl border border-white/10 btn-press" title="Screenshot">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+
+                    <!-- Aksi (muncul saat hover / fokus keyboard) -->
+                    ${!isEmbed ? `<div class="ui-row" style="position:absolute;inset:auto 0 0 0;justify-content:flex-end;gap:4px;padding:6px 8px;background:linear-gradient(0deg,rgba(0,0,0,.72),transparent);opacity:0;transition:opacity .18s var(--ease-out);z-index:20" class="video-actions group-hover:opacity-100 group-focus-within:opacity-100">
+                        <button onclick="takeScreenshot('video-${id}', '${cam?.nama || 'Camera'}')" aria-label="Ambil tangkapan layar ${cam?.nama || ''}" title="Tangkapan layar" class="btn-press" style="width:26px;height:26px;display:grid;place-items:center;border-radius:var(--radius-sm);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);color:#fff;cursor:pointer">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m4.5 17 5-5 4 4 2.5-2.5 3.5 3.5"/></svg>
                         </button>
-                        <button onclick="toggleFullscreen('video-${id}')" class="p-1.5 bg-slate-950/80 text-white rounded-lg hover:bg-emerald-600 transition shadow-xl border border-white/10 btn-press" title="Fullscreen">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                        <button onclick="toggleFullscreen('video-${id}')" aria-label="Layar penuh ${cam?.nama || ''}" title="Layar penuh" class="btn-press" style="width:26px;height:26px;display:grid;place-items:center;border-radius:var(--radius-sm);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.18);color:#fff;cursor:pointer">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.5H3.5V9M15 3.5h5.5V9M9 20.5H3.5V15M15 20.5h5.5V15"/></svg>
                         </button>
                     </div>` : ''}
                 </div>
@@ -888,11 +906,11 @@
                 
                 if (!cam.isPlayable) {
                     wrapper.innerHTML = `
-                        <div class="absolute inset-0 bg-slate-900/90 flex flex-col items-center justify-center p-6 text-center">
-                            <svg class="w-10 h-10 text-rose-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                            <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-1">${cam.nama} TERKUNCI</h4>
-                            <p class="text-[8px] text-slate-400 uppercase mb-4">Butuh Level ${cam.level.toUpperCase()}</p>
-                            <a href="${basePath}/user/login" class="px-4 py-2 bg-emerald-600 text-white text-[8px] font-black rounded-lg uppercase tracking-widest">Upgrade / Login</a>
+                        <div style="position:absolute;inset:0;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;gap:8px">
+                            <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="color:var(--danger-text)" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="9" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
+                            <strong style="font-size:12px;color:var(--fg)">${cam.nama} terkunci</strong>
+                            <span style="font-size:11px;color:var(--fg-muted)">Butuh level ${cam.level.toUpperCase()}</span>
+                            <a href="${basePath}/user/login" class="ui-btn ui-btn--primary ui-btn--sm" style="margin-top:4px">Upgrade / masuk</a>
                         </div>
                     `;
                     return;
@@ -1048,32 +1066,28 @@
                 const colorClass = levelColors[camLevel] || 'text-slate-500';
                 
                 return `
-                    <div class="p-4 glass-panel rounded-2xl border ${isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-800'} transition flex items-center justify-between" onclick="toggleCameraSelection('${cam.id}')">
-                        <div class="flex items-center gap-4 flex-1 min-w-0">
-                            <div class="w-10 h-10 bg-slate-950 rounded-xl flex items-center justify-center border border-slate-800 text-slate-700 relative">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                <!-- Status Badge -->
-                                <div class="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-slate-950 camera-status-badge" data-camera-id="${cam.id}" title="Checking...">
-                                    <div class="w-full h-full rounded-full bg-slate-600 animate-pulse"></div>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="text-[11px] font-black text-white uppercase truncate">${cam.nama}</h4>
-                                    ${!canView ? '<svg class="w-3 h-3 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>' : ''}
-                                </div>
-                                <p class="text-[9px] text-sky-400 font-bold uppercase truncate tracking-wide">${cam.lokasi || 'Live'}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-[7px] font-black ${colorClass} uppercase tracking-widest">
-                                        ${camLevel === 'umum' ? 'UMUM' : camLevel === 'member' ? 'MEMBER' : camLevel.toUpperCase()}
-                                    </span>
-                                    <span class="text-[7px] font-bold text-slate-500 uppercase tracking-widest camera-status-text" data-camera-id="${cam.id}">
-                                        • Checking...
-                                    </span>
-                                </div>
-                            </div>
+                    <div class="camera-item${isSelected ? ' selected' : ''}" data-id="${cam.id}" data-nama="${(cam.nama || '').toLowerCase()}"
+                         onclick="toggleCameraSelection('${cam.id}')" role="button" tabindex="0"
+                         style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer">
+                        <span class="ui-num" style="font-size:10px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--fg-subtle);flex:none">${camLevel.toUpperCase()}</span>
+
+                        <div style="position:relative;width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:var(--radius-sm);background:var(--surface-2);border:1px solid var(--border);color:var(--fg-subtle)">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="12.5" height="12" rx="2"/><path d="m15 10.5 5.5-3v9l-5.5-3"/></svg>
+                            <span class="camera-status-badge" data-camera-id="${cam.id}" title="Memeriksa..." style="position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;border:2px solid var(--surface);overflow:hidden">
+                                <div class="w-full h-full rounded-full bg-slate-600 animate-pulse"></div>
+                            </span>
                         </div>
-                        ${isSelected ? '<div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse ml-3"></div>' : ''}
+
+                        <div style="flex:1;min-width:0">
+                            <div class="ui-row" style="gap:4px;min-width:0">
+                                <h4 style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cam.nama}</h4>
+                                ${!canView ? '<svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20" style="color:var(--danger-text);flex:none" aria-label="Butuh akses" role="img"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>' : ''}
+                            </div>
+                            <p style="font-size:11px;color:var(--fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${cam.lokasi || 'Live'}</p>
+                            <span class="camera-status-text ui-status-text is-checking" data-camera-id="${cam.id}">memeriksa...</span>
+                        </div>
+
+                        ${isSelected ? '<span style="width:6px;height:6px;border-radius:50%;background:var(--accent-text);flex:none" aria-hidden="true"></span>' : ''}
                     </div>
                 `;
             }).join('');
@@ -1088,8 +1102,8 @@
             const tMap = document.getElementById('tab-map');
             if (tLive) tLive.classList.toggle('active', mode === 'live');
             if (tMap) tMap.classList.toggle('active', mode === 'map');
-            if (tLive) tLive.classList.toggle('text-slate-500', mode !== 'live');
-            if (tMap) tMap.classList.toggle('text-slate-500', mode !== 'map');
+            if (tLive) tLive.setAttribute('aria-selected', String(mode === 'live'));
+            if (tMap) tMap.setAttribute('aria-selected', String(mode === 'map'));
 
             // Update Mobile Bottom Bar
             const mIconLive = document.getElementById('m-icon-live');
@@ -1098,15 +1112,15 @@
             const mTextMap = document.getElementById('m-text-map');
 
             if (mode === 'live') {
-                if (mIconLive) mIconLive.className = 'p-2 rounded-xl bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all duration-300';
-                if (mTextLive) mTextLive.className = 'text-[9px] font-black text-emerald-500 uppercase tracking-widest';
-                if (mIconMap) mIconMap.className = 'p-2 rounded-xl text-slate-500 transition-all duration-300';
-                if (mTextMap) mTextMap.className = 'text-[9px] font-black text-slate-500 uppercase tracking-widest';
+                if (mIconLive) mIconLive.className = 'ui-bnav__icon is-active';
+                if (mTextLive) mTextLive.className = 'ui-bnav__label is-active';
+                if (mIconMap) mIconMap.className = 'ui-bnav__icon';
+                if (mTextMap) mTextMap.className = 'ui-bnav__label';
             } else {
-                if (mIconLive) mIconLive.className = 'p-2 rounded-xl text-slate-500 transition-all duration-300';
-                if (mTextLive) mTextLive.className = 'text-[9px] font-black text-slate-500 uppercase tracking-widest';
-                if (mIconMap) mIconMap.className = 'p-2 rounded-xl bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 transition-all duration-300';
-                if (mTextMap) mTextMap.className = 'text-[9px] font-black text-emerald-500 uppercase tracking-widest';
+                if (mIconLive) mIconLive.className = 'ui-bnav__icon';
+                if (mTextLive) mTextLive.className = 'ui-bnav__label';
+                if (mIconMap) mIconMap.className = 'ui-bnav__icon is-active';
+                if (mTextMap) mTextMap.className = 'ui-bnav__label is-active';
             }
 
             document.getElementById('live-display').classList.toggle('hidden', mode === 'map');
@@ -2153,14 +2167,14 @@
                 const status = cameraStatusData[cameraId];
                 
                 if (status && status.online) {
-                    text.textContent = '• Online';
-                    text.className = 'text-[7px] font-bold text-emerald-500 uppercase tracking-widest camera-status-text';
+                    text.textContent = 'Online';
+                    text.className = 'camera-status-text ui-status-text is-online';
                 } else if (status && !status.online) {
-                    text.textContent = '• Offline';
-                    text.className = 'text-[7px] font-bold text-rose-500 uppercase tracking-widest camera-status-text';
+                    text.textContent = 'Offline';
+                    text.className = 'camera-status-text ui-status-text is-offline';
                 } else {
-                    text.textContent = '• Checking...';
-                    text.className = 'text-[7px] font-bold text-slate-600 uppercase tracking-widest camera-status-text';
+                    text.textContent = 'Memeriksa...';
+                    text.className = 'camera-status-text ui-status-text is-checking';
                 }
             });
             
