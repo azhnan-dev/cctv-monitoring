@@ -1085,9 +1085,23 @@ dan menarik update langsung dari repository ini (`azhnan-dev/cctv-monitoring`).
 | Service | `cctv-web` (Node 20) + `mediamtx` |
 | Port | 3003 web · 8555 RTSP · 8856 HLS · 9123 MediaMTX API (lokal) |
 | Akses | `http://<ip-vps>:3003` (`behind_https_proxy: false`) |
-| Update | `git pull --ff-only` → `npm install --omit=dev` (jika `package.json` berubah) → `systemctl restart cctv-web` |
+| Update | **`./deploy.sh`** (satu perintah — lihat di bawah) |
 
 File yang bersifat lokal di server dilindungi `git update-index --skip-worktree`
 sehingga `git pull` tidak menimpanya: `config.json`, `cameras.db`,
 `cameras.db-wal`, `cameras.db-shm`, `mediamtx.yml`. Catatan operasional lengkap
 disimpan di server pada `/opt/cctv-monitoring/DEPLOY-VPS.md`.
+
+### Deploy satu perintah
+
+```bash
+./deploy.sh            # dari workstation: push commit lokal + update server + restart + health check
+./deploy.sh --check    # cek status server tanpa mengubah apa pun
+./deploy.sh --local    # dijalankan di server itu sendiri (git pull + restart)
+./deploy.sh --no-push  # update server tanpa push commit lokal
+```
+
+Script ini hanya me-restart service bila ada perubahan kode atau dependensi,
+memakai `git pull --ff-only` (tidak pernah menimpa perubahan lokal server), dan
+diakhiri health check `/login` = 200. Override target lewat env:
+`DEPLOY_HOST`, `DEPLOY_DIR`, `DEPLOY_BRANCH`, `DEPLOY_PORT`, `DEPLOY_USER`.
