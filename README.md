@@ -1074,3 +1074,20 @@ Terimakasih kepada:
 **Last Updated**: June 25, 2026
 **Maintained**: Active 🚀
 
+
+## 🖥️ Deployment Server (VPS)
+
+Deploy yang dipakai saat ini berjalan di VPS `172.16.13.101` (`/opt/cctv-monitoring`)
+dan menarik update langsung dari repository ini (`azhnan-dev/cctv-monitoring`).
+
+| Item | Nilai |
+|---|---|
+| Service | `cctv-web` (Node 20) + `mediamtx` |
+| Port | 3003 web · 8555 RTSP · 8856 HLS · 9123 MediaMTX API (lokal) |
+| Akses | `http://<ip-vps>:3003` (`behind_https_proxy: false`) |
+| Update | `git pull --ff-only` → `npm install --omit=dev` (jika `package.json` berubah) → `systemctl restart cctv-web` |
+
+File yang bersifat lokal di server dilindungi `git update-index --skip-worktree`
+sehingga `git pull` tidak menimpanya: `config.json`, `cameras.db`,
+`cameras.db-wal`, `cameras.db-shm`, `mediamtx.yml`. Catatan operasional lengkap
+disimpan di server pada `/opt/cctv-monitoring/DEPLOY-VPS.md`.
