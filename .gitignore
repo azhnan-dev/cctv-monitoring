@@ -1,0 +1,12 @@
+# Session store (SQLite) — runtime data, jangan di-commit
+sessions.db
+sessions.db-wal
+sessions.db-shm
+
+# Runtime / generated
+node_modules/
+stream_logs/
+logs/
+recordings/
+uploads/
+.config-backup*
