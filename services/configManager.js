@@ -7,7 +7,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const CONFIG_PATH = path.resolve(__dirname, '..', 'config.json');
+const CONFIG_PATH = process.env.CCTV_CONFIG_PATH
+    ? path.resolve(process.env.CCTV_CONFIG_PATH)
+    : path.resolve(__dirname, '..', 'config.json');
 
 /**
  * Read config with validation

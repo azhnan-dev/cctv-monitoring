@@ -2,7 +2,7 @@
 const dgram = require('dgram');
 const net = require('net');
 const http = require('http');
-const config = require('./config.json');
+const { config } = require('./lib/config');
 
 // Config Defaults
 const ONVIF_USER = config.onvif?.username || 'admin';

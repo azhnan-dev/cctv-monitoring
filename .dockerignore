@@ -1,0 +1,34 @@
+# Build context untuk Docker — data runtime & artefak kerja tidak ikut
+.git/
+.cindy-worktrees/
+node_modules/
+npm-debug.log*
+
+# data runtime (masuk lewat volume, bukan image)
+sessions.db*
+cameras.db-wal
+cameras.db-shm
+recordings/
+uploads/
+stream_logs/
+logs/
+*.log
+
+# config asli (container pakai docker/config.container.json)
+config.json
+
+# aset berat yang tidak dipakai image (AI dimatikan di container)
+mobilenet.caffemodel
+mobilenet.prototxt
+yolov8n.pt
+ai_snaps/
+
+# arsip kerja
+prototype/
+design-system/
+docs/
+*.BACKUP*
+*.bak
+deploy_server.bat
+smart_transcode.bat
+record_notify.bat

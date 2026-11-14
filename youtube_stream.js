@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const net = require('net');
 const db = require('./database');
-const config = require('./config.json');
+const { config } = require('./lib/config');
 
 const activeStreams = {};
 const logDir = path.join(__dirname, 'stream_logs');

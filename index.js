@@ -8,7 +8,7 @@ const db = require('./database');
 const http = require('http');
 const https = require('https');
 const session = require('express-session');
-const config = require('./config.json');
+const { config, CONFIG_FILE } = require('./lib/config');
 const telegramBot = require('./telegram_bot');
 const webPush = require('web-push');
 const bcrypt = require('./services/bcryptCompat');
@@ -446,7 +446,7 @@ app.use((req, res, next) => {
     }
     const hlsPort = config.mediamtx?.hls_port || 8856;
     const proxyReq = http.request({
-        hostname: '127.0.0.1',
+        hostname: getEffectiveMediaMtxHost(config),
         port: hlsPort,
         path: req.url,
         method: 'GET',
@@ -3352,7 +3352,7 @@ app.post('/admin/change-password', requireAuth, (req, res) => {
     console.log(`[ChangePassword] Received body keys: ${Object.keys(req.body || {})}`);
 
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
 
     const trimmedCurrent = String(current_password || '').trim();
     const livePass = String(config.authentication.password || '').trim();
@@ -3396,7 +3396,7 @@ app.post('/admin/change-password', requireAuth, (req, res) => {
 app.post('/admin/settings/web', requireAuth, (req, res) => {
     const { title, footer, running_text } = req.body;
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     
     try {
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -3420,7 +3420,7 @@ app.post('/admin/settings/web', requireAuth, (req, res) => {
 app.post('/admin/settings/recording', requireAuth, (req, res) => {
     const { start_time, end_time, delete_after } = req.body;
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     
     try {
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -3444,7 +3444,7 @@ app.post('/admin/settings/recording', requireAuth, (req, res) => {
 app.post('/admin/settings/mediamtx', requireAuth, (req, res) => {
     const { public_hls_url } = req.body;
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     
     try {
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -3466,7 +3466,7 @@ app.post('/admin/settings/mediamtx', requireAuth, (req, res) => {
 app.post('/admin/settings/telegram', requireAuth, (req, res) => {
     const { bot_token, chat_id, enabled } = req.body;
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     
     try {
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -3490,7 +3490,7 @@ app.post('/admin/settings/telegram', requireAuth, (req, res) => {
 app.post('/admin/settings/whatsapp', requireAuth, (req, res) => {
     const { admin_numbers } = req.body;
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     
     try {
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -3512,7 +3512,7 @@ app.post('/admin/settings/whatsapp', requireAuth, (req, res) => {
 app.post('/admin/settings/map', requireAuth, (req, res) => {
     const { default_lat, default_lng, default_zoom } = req.body;
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     
     try {
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
@@ -3699,6 +3699,7 @@ app.post('/api/youtube/overlay/settings', requireApiAuth, (req, res) => {
 let aiSidecarProcess = null;
 
 function ensureAiSidecarRunning() {
+    if (process.env.CCTV_DISABLE_AI === '1') return;
     db.get("SELECT COUNT(*) as active_count FROM cameras WHERE ai_enabled = 1", [], (err, row) => {
         if (!err && row && row.active_count > 0) {
             if (!aiSidecarProcess || aiSidecarProcess.killed) {
@@ -4139,13 +4140,12 @@ app.post('/api/settings', requireApiAuth, (req, res) => {
     config.site.running_text = running_text;
 
     const fs = require('fs');
-    const configPath = path.join(__dirname, 'config.json');
+    const configPath = CONFIG_FILE;
     fs.writeFile(configPath, JSON.stringify(config, null, 4), (err) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Failed to save config' });
         }
-        delete require.cache[require.resolve('./config.json')];
         app.locals.site = config.site; // Update in-memory
         res.json({ message: "Settings updated" });
     });
@@ -4179,7 +4179,7 @@ app.post('/api/settings/recording', requireApiAuth, async (req, res) => {
 
         // Save to config.json untuk persistence
         const fs = require('fs');
-        fs.writeFileSync(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
+        fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 4));
         
         // Update app.locals untuk views
         app.locals.recording = config.recording;
@@ -4319,7 +4319,7 @@ app.post('/api/settings/telegram', requireApiAuth, (req, res) => {
     };
 
     const fs = require('fs');
-    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4), (err) => {
+    fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 4), (err) => {
         if (err) return res.status(500).json({ error: 'Failed save' });
         app.locals.telegram = config.telegram;
         res.json({ message: "Telegram settings updated" });
@@ -4364,7 +4364,7 @@ app.post('/api/settings/mediamtx', requireApiAuth, (req, res) => {
     };
 
     const fs = require('fs');
-    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4), (err) => {
+    fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 4), (err) => {
         if (err) return res.status(500).json({ error: 'Failed save' });
         app.locals.mediamtx = config.mediamtx;
         app.locals.hls_port = config.mediamtx.hls_port;
@@ -6027,7 +6027,7 @@ function telegramUpdateAdminCredentials(username, password) {
     try {
         const fs = require('fs');
         const path = require('path');
-        const configPath = path.join(__dirname, 'config.json');
+        const configPath = CONFIG_FILE;
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
         const saltRounds = 10;
         const hashedPassword = bcrypt.hashSync(password, saltRounds);

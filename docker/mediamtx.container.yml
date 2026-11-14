@@ -1,0 +1,70 @@
+#!/bin/bash
+###############################################
+# mediamtx.yml untuk container (Coolify / docker compose)
+# Path mengacu ke volume /app/data; script ada di /app.
+#
+# RTSP (8555) & HLS (8856) TIDAK dipublish ke host:
+#   - MediaMTX menarik stream dari kamera (source = URL RTSP kamera), jadi
+#     tidak perlu ada koneksi masuk.
+#   - Browser mengambil HLS lewat proxy aplikasi (Express /cam_*), same-origin.
+
+logLevel: info
+
+# RTSP
+rtspAddress: :8555
+rtpAddress: :8050
+rtcpAddress: :8051
+
+# RTMP
+rtmpAddress: :1936
+
+# HLS
+hlsAddress: :8856
+hlsVariant: fmp4
+
+# WebRTC
+webrtcAddress: :8890
+webrtcLocalUDPAddress: :8190
+
+# SRT
+srtAddress: :8891
+
+# API (internal saja)
+api: yes
+apiAddress: :9123
+
+###############################################
+# Autentikasi internal — API dibuka untuk jaringan container.
+# MediaMTX v1.20 membatasi /v3/... ke localhost kalau blok ini tidak ada,
+# sehingga aplikasi (container lain) akan menerima 401.
+
+authInternalUsers:
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: publish
+      - action: read
+      - action: playback
+      - action: api
+      - action: metrics
+      - action: pprof
+
+###############################################
+# Default path settings
+
+pathDefaults:
+  record: yes
+  recordPath: /app/data/recordings/%path/%Y-%m-%d_%H-%M-%S.mp4
+  recordFormat: fmp4
+  recordSegmentDuration: 60m
+  recordDeleteAfter: 168h
+
+  runOnReady: /app/smart_transcode.sh
+  runOnReadyRestart: yes
+
+  runOnRecordSegmentComplete: /app/record_notify.sh
+
+paths:
+  all_others:
+    source: publisher
