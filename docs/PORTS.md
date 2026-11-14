@@ -29,11 +29,11 @@ Terakhir diverifikasi: **2026-11-14**.
 | 8080 | `coolify-proxy` | proxy internal |
 | 5432, 6379, 9000, 8443 | internal container | tidak dipublish |
 
-## Rencana (belum deploy)
+## Sedang berjalan / rencana
 
 | Port | Rencana | Catatan |
 |---|---|---|
-| **4025** | `cctv-monitoring` (stack Docker Compose) | web app; RTSP 8555 & HLS 8856 **tidak** dipublish (MediaMTX menarik stream dari kamera, HLS lewat proxy `/cam_*` di app) |
+| **4026** | `cctv-monitoring` (stack Docker Compose) | web app; RTSP 8555 & HLS 8856 **tidak** dipublish (MediaMTX menarik stream dari kamera, HLS lewat proxy `/cam_*` di app) |
 
 ## Cara pakai
 
