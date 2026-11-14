@@ -672,7 +672,10 @@ async function mediaMtxRequest(method, path, body = null) {
     const primaryHost = getEffectiveMediaMtxHost(config);
     const apiPort = config.mediamtx?.api_port || 9123;
     const primaryResult = await mediaMtxRequestInternal(primaryHost, apiPort, method, path, body);
-    if (!primaryResult?.error || primaryHost === '127.0.0.1') {
+    // Respons HTTP (termasuk 4xx seperti 404 saat DELETE path yang belum ada)
+    // sudah final: jangan fallback ke 127.0.0.1, karena kegagalan koneksi
+    // di fallback itu akan menandai MediaMTX "unreachable" dan mematikan sync.
+    if (!primaryResult?.error || primaryResult.status || primaryHost === '127.0.0.1') {
         return primaryResult;
     }
     return mediaMtxRequestInternal('127.0.0.1', apiPort, method, path, body);
@@ -1204,16 +1207,16 @@ async function registerCamera(cam) {
             name: pathName,
             source: cam.url_rtsp,
             sourceOnDemand: false,
-            rtspTransport: 'tcp',
-            sourceProtocol: 'tcp'
+            // NB: MediaMTX v1.20 tidak mengenal field `sourceProtocol`;
+            // mengirimnya membuat POST /v3/config/paths/add dibalas 400.
+            rtspTransport: 'tcp'
         });
         if (!addRes?.error) return addRes;
         if (addRes.status === 409) {
             return mediaMtxRequest('PATCH', '/patch/' + pathName, {
                 source: cam.url_rtsp,
                 sourceOnDemand: false,
-                rtspTransport: 'tcp',
-                sourceProtocol: 'tcp'
+                rtspTransport: 'tcp'
             });
         }
         return addRes;
