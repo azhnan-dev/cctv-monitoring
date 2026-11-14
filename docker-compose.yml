@@ -2,7 +2,7 @@
 #
 # Dua container dari satu image:
 #   mediamtx → engine streaming (RTSP/HLS internal, API di :9123)
-#   web      → aplikasi Node (Express + SQLite), publish 4025 → 3003
+#   web      → aplikasi Node (Express + SQLite), publish 4026 → 3003
 #
 # Hanya web yang punya port publik. RTSP/HLS sengaja tidak dipublish:
 # MediaMTX menarik stream dari kamera, dan browser mengambil HLS lewat proxy
@@ -66,7 +66,7 @@ services:
       CCTV_ADMIN_USER: ${CCTV_ADMIN_USER:-}
       CCTV_ADMIN_PASS: ${CCTV_ADMIN_PASS:-}
     ports:
-      - "4025:3003"
+      - "4026:3003"
     volumes:
       - cctv-data:/app/data
     healthcheck:

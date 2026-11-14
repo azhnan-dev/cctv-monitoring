@@ -1,7 +1,7 @@
 # Registry Port — Coolify CT 120 (`10.111.111.3`)
 
 Sumber data: `scripts/check-ports.sh` (API Coolify + `ss`/`docker ps` di server).
-Terakhir diverifikasi: **2026-11-10**.
+Terakhir diverifikasi: **2026-11-14**.
 
 ## Konvensi
 
@@ -23,6 +23,7 @@ Terakhir diverifikasi: **2026-11-10**.
 | 4020 | `pos-klinik-madan-medica` | app pos (internal 4000) |
 | 4023 | `obsidian` | catatan tim (internal 3000) |
 | 4024 | `hermes-agent` | agent (internal 9119) |
+| 4025 | `olt-monitor-v3` | app olt-monitor (internal 5001) |
 | 6001, 6002 | `coolify` | terminal/realtime |
 | 8000 | `coolify` | dashboard |
 | 8080 | `coolify-proxy` | proxy internal |
